@@ -1,6 +1,7 @@
 const char* doUnfold(float *source,
 								   	 float **respMatrix,
-                		 int ssizex, int ssizey,
+                		 int ssizex,
+										 int ssizey,
                 		 int numberIterations,
                 		 int numberRepetitions,
 										 double boost)
