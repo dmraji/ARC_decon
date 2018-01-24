@@ -32,6 +32,6 @@ int main() {
 
   in_file.close();
 
-  cout << "done\n";
+  cout << "\ndone\n";
   return 0;
 }
