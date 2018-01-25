@@ -1,3 +1,10 @@
+#include <TMath.h>
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
 const char* doUnfold(float *source,
 								   	 float **respMatrix,
                 		 int ssizex,
