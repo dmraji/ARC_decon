@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/david/4232/radiation_processing/decon_main.cc
+string
+-
+iostream
+-
+
+/home/david/4232/radiation_processing/src/data_read.cc
+iostream
+-
+string
+-
+vector
+-
+fstream
+-
+
+/home/david/4232/radiation_processing/src/decon_space.cc
+iostream
+-
+string
+-
+vector
+-
+fstream
+-
+
+/home/david/4232/radiation_processing/src/gold.cc
+iostream
+-
+string
+-
+vector
+-
+cmath
+-
+

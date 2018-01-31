@@ -1,13 +1,14 @@
 // Reading in radiation detector output files
-
+#include <pqxx/pqxx>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
 
 using namespace std;
+using namespace pqxx;
 
-int main() {
+data_read::data_read(int argc, char** argv) {
 
   ifstream in_file;
 
@@ -32,6 +33,10 @@ int main() {
 
   in_file.close();
 
-  cout << "\ndone\n";
+  cout << "\nRead successful.\n";
   return 0;
 }
+
+// object destructor
+
+data_read::~data_read() {}
