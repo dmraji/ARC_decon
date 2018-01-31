@@ -1,2 +1,5 @@
-# Output files
-main
+# Makefiles
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+CMakeFiles/*
