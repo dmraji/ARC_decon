@@ -9,6 +9,8 @@ int main() {
 
   cout << "hi.\n";
 
+  data_mat = data_read();
+
 
 
   return 0;
