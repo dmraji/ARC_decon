@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include <stdlib.h>
 #include <stdio.h>
 #include <postgresql/libpq-fe.h>
 
@@ -34,6 +36,7 @@ data_read::data_read() {
   }
 
   rec_count = PQntuples(res);
+  // cout << rec_count << '\n';
 
   printf("We received %d records.\n", rec_count);
   puts("==========================");
@@ -45,15 +48,22 @@ data_read::data_read() {
       puts("");
   }
 
-  vector<vector<int> > read_mat(rec_count);
-  for ( int i = 0 ; i < RR ; i++ ) {
-        read_mat[i].resize(10);
-  }
+  vector<vector<float> > read_mat(10, vector<float>(rec_count, 1));
+  for (int r=0; r<rec_count; r++)
+  {
+      std::cout << "values= ";
+      vector<float> temp;
+      for (int c=1; c<10; c++)
+      {
+          char* value = PQgetvalue(res, r, c);
+          float fval = atof(value);
 
-  for (col=0; col<10; col++) {
-      printf("%s\t", PQgetvalue(res, row, col));
+          std::cout << fval << " ";
+          temp.push_back(fval);     // Push the int into the temporary vector<int>
+      }
+      std::cout << std::endl;
+      read_mat.push_back(temp);
   }
-  puts("");
 
   puts("==========================");
 
