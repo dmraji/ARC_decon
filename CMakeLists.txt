@@ -17,4 +17,4 @@ add_executable(${name} ${name}.cc ${sources} ${headers})
 
 # get the external libraries
 link_directories(/usr/lib/x86_64-linux-gnu)
-target_link_libraries(${name} pqxx-4.0.so armadillo.so)
+target_link_libraries(${name} pq.so armadillo.so)

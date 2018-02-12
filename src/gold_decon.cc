@@ -7,17 +7,14 @@
 
 using namespace std;
 
-gold_decon::gold_decon(float *source,
-					 						 float **respMatrix,
-					 						 int ssizex,
-					 						 int ssizey,
-					 						 int numberIterations,
-					 						 int numberRepetitions,
-					 						 double boost)
+gold_decon::gold_decon(*source,
+					 						 **respMatrix,
+					 						 ssizex,
+					 						 ssizey,
+					 						 numberIterations,
+					 						 numberRepetitions,
+					 						 boost)
 					 						 {
-
-   	int i, j, k, lindex, lhx = 0, repet;
-   	double lda, ldb, ldc, area;
 
    	if (ssizex <= 0 || ssizey <= 0)
       	return "Wrong Parameters";

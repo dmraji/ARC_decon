@@ -9,6 +9,9 @@ class gold_decon {
     gold_decon();
     ~gold_decon();
 
+    int i, j, k, lindex, lhx = 0, repet;
+   	double lda, ldb, ldc, area;
+
 
 };
 

@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <postgresql/libpq-fe.h>
 
+#include "data_read.hh"
+
 using namespace std;
 
 data_read::data_read() {
@@ -48,12 +50,12 @@ data_read::data_read() {
       puts("");
   }
 
-  vector<vector<float> > read_mat(10, vector<float>(rec_count, 1));
+  vector< vector<float> > read_mat(0, vector<float>(rec_count, 1));
   for (int r=0; r<rec_count; r++)
   {
       std::cout << "values= ";
       vector<float> temp;
-      for (int c=1; c<10; c++)
+      for (int c=0; c<10; c++)
       {
           char* value = PQgetvalue(res, r, c);
           float fval = atof(value);
@@ -65,13 +67,21 @@ data_read::data_read() {
       read_mat.push_back(temp);
   }
 
+  for (int i = 0; i < read_mat.size(); i++)
+  {
+      for (int j = 0; j < read_mat[i].size(); j++)
+      {
+          cout << read_mat[i][j] << endl;
+      }
+  }
+
   puts("==========================");
 
   PQclear(res);
 
   PQfinish(conn);
 
-  return 0;
+  return read_mat;
 
 }
 
