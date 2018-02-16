@@ -7,46 +7,109 @@
 
 using namespace std;
 
-gold_decon::gold_decon(*source,
-					 						 **respMatrix,
-					 						 ssizex,
-					 						 ssizey,
-					 						 numberIterations,
-					 						 numberRepetitions,
-					 						 boost)
+/*	Vars to read-in;
+
+		"source" is 1D array of spectrum read in by detector
+
+		"respMatrix" is 2D array of recorded spectra per per each isotope
+
+		"sizex" is number of spectra in recorded matrix
+
+		"sizey" is number of channels per spectra in the recorded matrix
+
+		"numberIterations" defines the number of trials that the program will use in
+			order to find convergence
+
+		"numberRepetitions" defines ...
+
+		"boost" is effectively a boolean that tells whether to try for extra ...
+
+*/
+
+gold_decon::gold_decon(std::vector< std::vector <float> > rM,
+					 						 std::vector <float> s,
+					 						 int sx,
+					 						 int sy,
+					 						 int nI,
+					 						 int nR,
+					 						 double b) :
+											 respMatrix(rM),
+									     source(s),
+									     sizex(sx),
+									     sizey(sy),
+									     numberIterations(nI),
+									     numberRepetitions(nR),
+									     boost(b)
 					 						 {
 
+		// Check size of matrix to read, check number of iterations
    	if (ssizex <= 0 || ssizey <= 0)
       	return "Wrong Parameters";
    	if (ssizex < ssizey)
       	return "Sizex must be greater than sizey)";
    	if (numberIterations <= 0)
       	return "Number of iterations must be positive";
+
+		/*	initialize working_space, is a double array with certain size
+
+				example: for sizeX = 3, sizeY = 6, we get working_space was size 66
+		*/
    	double *working_space = new double[ssizex * ssizey + 2 * ssizey * ssizey + 4 * ssizex];
 
-				/*read response matrix*/
-   	for (j = 0; j < ssizey && lhx != -1; j++) {
+		/*	read respMatrix
+
+				iterating with var "j" and terminal condition "lhx"
+
+		*/
+
+		// Cycle through all rows of respMatrix
+   	for (j = 0; j < ssizey && lhx != -1; j++)
+		{
+
+				/*	initializing vars "area" and "lhx"
+
+						lhx checks whether there are rows full of zeroes
+
+						area keeps track of the sum of the values in respMatrix
+
+				*/
       	area = 0;
       	lhx = -1;
       	for (i = 0; i < ssizex; i++) {
          	lda = respMatrix[j][i];
+
+					// changing the lhx value to account for the fact that the value is nonzero
          	if (lda != 0) {
             	lhx = i + 1;
          	}
+
+					// Set the working_space index to the value from the respMatrix
          	working_space[j * ssizex + i] = lda;
+
+					// Add the value from respMatrix to the total area
          	area = area + lda;
       	}
+
       	if (lhx != -1) {
          	for (i = 0; i < ssizex; i++)
-            	working_space[j * ssizex + i] /= area;
+					{
+							// for nonzero value in at least one value in row of respMatrix, divide entire row by total row sum
+            	working_space[j * ssizex + i] /= area; // working_space = working_space / area
+					}
       	}
    	}
+
+		// Fail with output message if zero row found
    	if (lhx == -1) {
       	delete [] working_space;
-      	return ("ZERO COLUMN IN RESPONSE MATRIX");
+      	return ("ZERO ROW IN RESPONSE MATRIX");
    	}
 
-		/*read source vector*/
+		/*	Read source vectors
+
+
+
+		*/
    	for (i = 0; i < ssizex; i++)
       	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex + i] =
           	source[i];

@@ -11,6 +11,7 @@ file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 
 # get the header files
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # create the executable
 add_executable(${name} ${name}.cc ${sources} ${headers})

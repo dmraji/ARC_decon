@@ -11,7 +11,7 @@
 
 using namespace std;
 
-data_read::data_read() {
+float data_read::data_read() {
 
   PGconn   *conn;
   PGresult *res;
@@ -50,7 +50,8 @@ data_read::data_read() {
       puts("");
   }
 
-  vector< vector<float> > read_mat(0, vector<float>(rec_count, 1));
+  extern std::vector<std::vector <float> > data_mat;
+
   for (int r=0; r<rec_count; r++)
   {
       std::cout << "values= ";
@@ -64,14 +65,14 @@ data_read::data_read() {
           temp.push_back(fval);     // Push the int into the temporary vector<int>
       }
       std::cout << std::endl;
-      read_mat.push_back(temp);
+      data_mat.push_back(temp);
   }
 
-  for (int i = 0; i < read_mat.size(); i++)
+  for (int i = 0; i < data_mat.size(); i++)
   {
-      for (int j = 0; j < read_mat[i].size(); j++)
+      for (int j = 0; j < data_mat[i].size(); j++)
       {
-          cout << read_mat[i][j] << endl;
+          cout << data_mat[i][j] << endl;
       }
   }
 
@@ -81,7 +82,7 @@ data_read::data_read() {
 
   PQfinish(conn);
 
-  return read_mat;
+  return data_mat;
 
 }
 
