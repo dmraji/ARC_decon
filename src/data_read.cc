@@ -50,19 +50,19 @@ float data_read::data_read() {
       puts("");
   }
 
-  extern std::vector<std::vector <float> > data_mat;
-
   for (int r=0; r<rec_count; r++)
   {
       std::cout << "values= ";
-      vector<float> temp;
+      
       for (int c=0; c<10; c++)
       {
           char* value = PQgetvalue(res, r, c);
           float fval = atof(value);
 
           std::cout << fval << " ";
-          temp.push_back(fval);     // Push the int into the temporary vector<int>
+
+          // Push the int into the temporary vector<float>
+          temp.push_back(fval);
       }
       std::cout << std::endl;
       data_mat.push_back(temp);

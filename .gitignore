@@ -9,3 +9,6 @@ src/data_read_test
 
 # Test Files
 src/data_read_test.cc
+tests/*
+source_sims/*
+

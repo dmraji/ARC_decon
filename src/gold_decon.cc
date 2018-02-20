@@ -13,9 +13,9 @@ using namespace std;
 
 		"respMatrix" is 2D array of recorded spectra per per each isotope
 
-		"sizex" is number of spectra in recorded matrix
+		"sizex" is number of channels per spectra in the recorded matrix
 
-		"sizey" is number of channels per spectra in the recorded matrix
+		"sizey" is number of spectra in recorded matrix
 
 		"numberIterations" defines the number of trials that the program will use in
 			order to find convergence
@@ -26,8 +26,9 @@ using namespace std;
 
 */
 
-gold_decon::gold_decon(std::vector< std::vector <float> > rM,
-					 						 std::vector <float> s,
+// initialization of vars using member initialization list
+gold_decon::gold_decon(float **rM,
+					 						 float *s,
 					 						 int sx,
 					 						 int sy,
 					 						 int nI,
@@ -35,8 +36,8 @@ gold_decon::gold_decon(std::vector< std::vector <float> > rM,
 					 						 double b) :
 											 respMatrix(rM),
 									     source(s),
-									     sizex(sx),
-									     sizey(sy),
+									     ssizex(sx),
+									     ssizey(sy),
 									     numberIterations(nI),
 									     numberRepetitions(nR),
 									     boost(b)
@@ -52,7 +53,7 @@ gold_decon::gold_decon(std::vector< std::vector <float> > rM,
 
 		/*	initialize working_space, is a double array with certain size
 
-				example: for sizeX = 3, sizeY = 6, we get working_space was size 66
+				example: for sizeX = 6, sizeY = 3, we get working_space was size 78
 		*/
    	double *working_space = new double[ssizex * ssizey + 2 * ssizey * ssizey + 4 * ssizex];
 
@@ -62,7 +63,7 @@ gold_decon::gold_decon(std::vector< std::vector <float> > rM,
 
 		*/
 
-		// Cycle through all rows of respMatrix
+		// Cycle through all columns of respMatrix
    	for (j = 0; j < ssizey && lhx != -1; j++)
 		{
 
@@ -75,6 +76,8 @@ gold_decon::gold_decon(std::vector< std::vector <float> > rM,
 				*/
       	area = 0;
       	lhx = -1;
+
+				// Cycle through all rows of respMatrix
       	for (i = 0; i < ssizex; i++) {
          	lda = respMatrix[j][i];
 
@@ -102,69 +105,84 @@ gold_decon::gold_decon(std::vector< std::vector <float> > rM,
 		// Fail with output message if zero row found
    	if (lhx == -1) {
       	delete [] working_space;
-      	return ("ZERO ROW IN RESPONSE MATRIX");
+
+				// note: was formerly "zero column"
+      	return ("ZERO COLUMN IN RESPONSE MATRIX; Spectra full of zero values");
    	}
 
-		/*	Read source vectors
+		/*	Read source vector
 
-
+				Cycle through all channels; this value needs to be the same for the
+					respMatrix spectra and the source vector;
 
 		*/
    	for (i = 0; i < ssizex; i++)
-      	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex + i] =
-          	source[i];
 
-						/*create matrix at*a + at*y */
-   			for (i = 0; i < ssizey; i++) {
-      	for (j = 0; j < ssizey; j++) {
-         	lda = 0;
-         	for (k = 0; k < ssizex; k++) {
-            	ldb = working_space[ssizex * i + k];
-            	ldc = working_space[ssizex * j + k];
-            	lda = lda + ldb * ldc;
-         	}
-         	working_space[ssizex * ssizey + ssizey * i + j] = lda;
-      	}
-      	lda = 0;
-      	for (k = 0; k < ssizex; k++) {
-         	ldb = working_space[ssizex * i + k];
-         	ldc =
-             	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex +
-                           	k];
-         					lda = lda + ldb * ldc;
-      		}
-      	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i] =
-          	lda;
-   		}
+			/*	Take last two lengths of ssize in working_space and assign source
+					values to first ssizex length;
+
+					Example: for ssizex = 6, ssizey = 3 (working_space length = 78),
+									 positions 67 thru 72 are assigned source vector values
+
+			*/
+    	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex + i] =
+        	source[i];
+
+			/*	create matrix at*a + at*y
+
+
+
+			*/
+   		for (i = 0; i < ssizey; i++) {
+    	for (j = 0; j < ssizey; j++) {
+       	lda = 0;
+       	for (k = 0; k < ssizex; k++) {
+          	ldb = working_space[ssizex * i + k];
+          	ldc = working_space[ssizex * j + k];
+          	lda = lda + ldb * ldc;
+       	}
+       	working_space[ssizex * ssizey + ssizey * i + j] = lda;
+    	}
+    	lda = 0;
+    	for (k = 0; k < ssizex; k++) {
+       	ldb = working_space[ssizex * i + k];
+       	ldc =
+           	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex +
+                         	k];
+       					lda = lda + ldb * ldc;
+    		}
+    	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i] =
+        	lda;
+   	}
 
 			/*move vector at*y*/
    	for (i = 0; i < ssizey; i++)
-      	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex + i] =
-          	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i];
+    	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex + i] =
+        	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i];
 
-						/*create matrix at*a*at*a + vector at*a*at*y */
-   			for (i = 0; i < ssizey; i++) {
-      	for (j = 0; j < ssizey; j++) {
-         	lda = 0;
-         	for (k = 0; k < ssizey; k++) {
-            	ldb = working_space[ssizex * ssizey + ssizey * i + k];
-            	ldc = working_space[ssizex * ssizey + ssizey * j + k];
-            	lda = lda + ldb * ldc;
-         	}
-         	working_space[ssizex * ssizey + ssizey * ssizey + ssizey * i + j] =
-             	lda;
-      	}
-      	lda = 0;
-      	for (k = 0; k < ssizey; k++) {
-         	ldb = working_space[ssizex * ssizey + ssizey * i + k];
-         	ldc =
-             	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex +
-                           	k];
-         					lda = lda + ldb * ldc;
-      		}
-      	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i] =
-          	lda;
-   		}
+					/*create matrix at*a*at*a + vector at*a*at*y */
+   		for (i = 0; i < ssizey; i++) {
+    	for (j = 0; j < ssizey; j++) {
+       	lda = 0;
+       	for (k = 0; k < ssizey; k++) {
+          	ldb = working_space[ssizex * ssizey + ssizey * i + k];
+          	ldc = working_space[ssizex * ssizey + ssizey * j + k];
+          	lda = lda + ldb * ldc;
+       	}
+       	working_space[ssizex * ssizey + ssizey * ssizey + ssizey * i + j] =
+           	lda;
+    	}
+    	lda = 0;
+    	for (k = 0; k < ssizey; k++) {
+       	ldb = working_space[ssizex * ssizey + ssizey * i + k];
+       	ldc =
+           	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex +
+                         	k];
+       					lda = lda + ldb * ldc;
+    		}
+    	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i] =
+        	lda;
+   	}
 
 			/*move at*a*at*y*/
    	for (i = 0; i < ssizey; i++)
@@ -172,41 +190,41 @@ gold_decon::gold_decon(std::vector< std::vector <float> > rM,
           	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i];
 
 						/*initialization in resulting vector */
-   			for (i = 0; i < ssizey; i++)
+   	for (i = 0; i < ssizey; i++)
       	working_space[ssizex * ssizey + 2 * ssizey * ssizey + i] = 1;
 
         	/***START OF ITERATIONS***/
-   		for (repet = 0; repet < numberRepetitions; repet++) {
-      	if (repet != 0) {
-         	for (i = 0; i < ssizey; i++)
-            	working_space[ssizex * ssizey + 2 * ssizey * ssizey + i] = pow(working_space[ssizex * ssizey + 2 * ssizey * ssizey + i], boost);
-      	}
-      	for (lindex = 0; lindex < numberIterations; lindex++) {
+   	for (repet = 0; repet < numberRepetitions; repet++) {
+    	if (repet != 0) {
+       	for (i = 0; i < ssizey; i++)
+          	working_space[ssizex * ssizey + 2 * ssizey * ssizey + i] = pow(working_space[ssizex * ssizey + 2 * ssizey * ssizey + i], boost);
+    	}
+    	for (lindex = 0; lindex < numberIterations; lindex++) {
 
-         	for (i = 0; i < ssizey; i++) {
-            	lda = 0;
-            	for (j = 0; j < ssizey; j++) {
-               	ldb =
-                   	working_space[ssizex * ssizey + ssizey * ssizey + ssizey * i + j];
-               	ldc = working_space[ssizex * ssizey + 2 * ssizey * ssizey + j];
-               	lda = lda + ldb * ldc;
-            	}
-            	ldb =
-                	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex + i];
-            	if (lda != 0) {
-               	lda = ldb / lda;
-            	}
+       	for (i = 0; i < ssizey; i++) {
+          	lda = 0;
+          	for (j = 0; j < ssizey; j++) {
+             	ldb =
+                 	working_space[ssizex * ssizey + ssizey * ssizey + ssizey * i + j];
+             	ldc = working_space[ssizex * ssizey + 2 * ssizey * ssizey + j];
+             	lda = lda + ldb * ldc;
+          	}
+          	ldb =
+              	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex + i];
+          	if (lda != 0) {
+             	lda = ldb / lda;
+          	}
 
-            	else
-               	lda = 0;
-            	ldb = working_space[ssizex * ssizey + 2 * ssizey * ssizey + i];
-            	lda = lda * ldb;
-            	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i] = lda;
-         	}
-         	for (i = 0; i < ssizey; i++)
-            	working_space[ssizex * ssizey + 2 * ssizey * ssizey + i] =
-                	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i];
-      		}
+          	else
+             	lda = 0;
+          	ldb = working_space[ssizex * ssizey + 2 * ssizey * ssizey + i];
+          	lda = lda * ldb;
+          	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i] = lda;
+       	}
+       	for (i = 0; i < ssizey; i++)
+          	working_space[ssizex * ssizey + 2 * ssizey * ssizey + i] =
+              	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i];
+    		}
    	}
 
 		/*write back resulting spectrum*/
