@@ -9,7 +9,7 @@
 
 using namespace std;
 
-float resp_read::resp_read()
+resp_read::resp_read()
 {
 
   spectra_names.push_back("5m_BG_2-15-18.txt");

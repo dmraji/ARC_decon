@@ -1,3 +1,5 @@
+~~~ RAD_READ README ~~~
+
 ////////////////////////////////////
 //                                //
 //                                //
@@ -75,5 +77,3 @@ Tables are used to hold data within psql databases. To create a table while
   data-type signifies what form the variables within the data columns will take.
   Examples are "integer", varchar(20) (which indicates a string of 20 chars or
   less) and char(10) (which indicates a numeral string of 10 digits or less).
-
-  

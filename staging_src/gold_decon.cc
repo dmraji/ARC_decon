@@ -27,20 +27,13 @@ using namespace std;
 */
 
 // initialization of vars using member initialization list
-gold_decon::gold_decon(float **rM,
-					 						 float *s,
-					 						 int sx,
-					 						 int sy,
-					 						 int nI,
-					 						 int nR,
-					 						 double b) :
-											 respMatrix(rM),
-									     source(s),
-									     ssizex(sx),
-									     ssizey(sy),
-									     numberIterations(nI),
-									     numberRepetitions(nR),
-									     boost(b)
+gold_decon::gold_decon(float **respMatrix,
+					 						 float *source,
+					 						 int ssizex,
+					 						 int ssizey,
+					 						 int numberIterations,
+					 						 int numberRepetitions,
+					 						 double boost)
 					 						 {
 
 		// Check size of matrix to read, check number of iterations
@@ -204,13 +197,13 @@ gold_decon::gold_decon(float **rM,
        	for (i = 0; i < ssizey; i++) {
           	lda = 0;
           	for (j = 0; j < ssizey; j++) {
-             	ldb =
-                 	working_space[ssizex * ssizey + ssizey * ssizey + ssizey * i + j];
+             	ldb =	working_space[ssizex * ssizey + ssizey * ssizey + ssizey * i + j];
              	ldc = working_space[ssizex * ssizey + 2 * ssizey * ssizey + j];
              	lda = lda + ldb * ldc;
           	}
-          	ldb =
-              	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex + i];
+
+          	ldb =	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex + i];
+
           	if (lda != 0) {
              	lda = ldb / lda;
           	}

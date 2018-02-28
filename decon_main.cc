@@ -11,6 +11,7 @@ using namespace std;
 
 vector< vector<float> > data_mat;
 vector< vector<float> > resp_mat_read;
+float source_decon[4096];
 
 int main(int argc, char** argv) {
 
@@ -18,7 +19,7 @@ int main(int argc, char** argv) {
 
   // Build response matrix from experimental spectra
   int chs = 4096;
-  int num_spectra = 2;
+  int num_spectra = 5;
 
   // Call to function to read response files
   resp_read resp;
@@ -40,43 +41,36 @@ int main(int argc, char** argv) {
   // Obtain vector of vectors via data read-in
   data_read data;
 
-  // Take the energy values from the data and build a response matrix to put
-  //   through Gold's energy deconvolution algorithm
-  int x;
-  ifstream inFile;
-
-  inFile.open("source_sim.txt");
-  if (!inFile) {
-      cout << "Unable to open file";
-      exit(1); // terminate with error
-  }
-
-
-
-  inFile.close();
+  float* source_mat = new float[];
 
   for (int dat_ind = 0; dat_ind < data_mat.size(); dat_ind++)
   {
-    source_mat.push_back(data_mat[dat_ind][8]);
+    source_mat[dat_ind] = data_mat[dat_ind][8];
   }
 
-  for (int i = 0; i < source_mat.size(); i++)
-  {
-      cout << source_mat[i] << endl;
-  }
+  histo makeHist(source_mat);
 
-    gold_decon callit("VECOFVEC_RESP_VAR",
-                      source_mat,
-                      "INT_NUM_SPECTRA_IN_REC_MAT",
-                      "INT_NUM_CHANNELS_IN_REC_MAT",
-                      "INT_NUM_ITER",
-                      "INT_NUM_REPET",
-                      "DOUBLE_BOOST"
-                      );
+  int num_iter = 10000;
+  int num_rep = 10;
+  double boost = 10;
+
+  gold_decon callIt(response_matrix,
+                    spectrum_vec,
+                    chs,
+                    num_spectra,
+                    num_iter,
+                    num_rep,
+                    boost
+                    );
+
+  spatial_decon spaceOut(
+    // unfinished
+  );
 
   for(int i = 0; i < chs; ++i) {
     delete [] response_matrix[i];
   }
+
   delete [] response_matrix;
 
   return 0;

@@ -3,7 +3,8 @@
 
 using namespace std;
 
-class data_read {
+class data_read
+{
 
   public:
 
@@ -15,6 +16,8 @@ class data_read {
   private:
 
     vector<float> temp;
+
+    int sim;
 
 };
 
