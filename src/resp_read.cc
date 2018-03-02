@@ -12,15 +12,16 @@ using namespace std;
 resp_read::resp_read()
 {
 
-  spectra_names.push_back("5m_BG_2-15-18.txt");
-  spectra_names.push_back("5m_Am241_10micCi.txt");
-  spectra_names.push_back("5m_Co60.txt");
-  spectra_names.push_back("5m_Cs137_2-15-18.txt");
-  spectra_names.push_back("5m_depU_2-15-18.txt");
+  spectra_names.push_back("2_21_hour_BG.txt");
+  spectra_names.push_back("2_21_am241.txt");
+  spectra_names.push_back("2_21_co60.txt");
+  spectra_names.push_back("2_21_cs137.txt");
+  spectra_names.push_back("2_21_natU.txt");
+  spectra_names.push_back("2_21_ra226.txt");
 
   ifstream inFile;
 
-  for(k=0; k < 5; k++)
+  for(int k=0; k < 6; k++)
   {
 
     inFile.open(spectra_names[k]);
@@ -41,7 +42,9 @@ resp_read::resp_read()
 
   }
 
-  return resp_mat_read;
+  cout << "end resp read." << endl;
+
+  // return resp_mat_read;
 }
 
 resp_read::~resp_read() {}

@@ -3,6 +3,8 @@
 
 using namespace std;
 
+extern std::vector<std::vector <float> > resp_mat_read;
+
 class resp_read {
 
   public:
@@ -10,7 +12,7 @@ class resp_read {
     resp_read();
     ~resp_read();
 
-    extern std::vector<std::vector <float> > resp_mat_read;
+
 
   private:
 

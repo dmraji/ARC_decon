@@ -36,13 +36,18 @@ gold_decon::gold_decon(float **respMatrix,
 					 						 double boost)
 					 						 {
 
+	  cout << "begin gold." << endl;
+
 		// Check size of matrix to read, check number of iterations
    	if (ssizex <= 0 || ssizey <= 0)
-      	return "Wrong Parameters";
+      	cout << "Wrong Parameters" << endl;
+				exit(1);
    	if (ssizex < ssizey)
-      	return "Sizex must be greater than sizey)";
+      	cout << "Sizex must be greater than sizey)" << endl;
+				exit(1);
    	if (numberIterations <= 0)
-      	return "Number of iterations must be positive";
+      	cout << "Number of iterations must be positive" << endl;
+				exit(1);
 
 		/*	initialize working_space, is a double array with certain size
 
@@ -95,12 +100,12 @@ gold_decon::gold_decon(float **respMatrix,
       	}
    	}
 
-		// Fail with output message if zero row found
+		// Fail with output message if zero column found
    	if (lhx == -1) {
       	delete [] working_space;
 
-				// note: was formerly "zero column"
-      	return ("ZERO COLUMN IN RESPONSE MATRIX; Spectra full of zero values");
+      	cout << ("ZERO COLUMN IN RESPONSE MATRIX; Spectra full of zero values") << endl;
+				exit(1);
    	}
 
 		/*	Read source vector
@@ -229,7 +234,9 @@ gold_decon::gold_decon(float **respMatrix,
          	source[i] = 0;
    	}
    	delete[]working_space;
-   	return 0;
+   	// return 0;
+
+		cout << "end decon_gold." << endl;
 
 }
 

@@ -3,16 +3,18 @@
 
 using namespace std;
 
+extern float source_decon[4096];
+
 class histo
 {
 
   public:
-    histo();
+    histo(float*,
+          int);
     ~histo();
 
-    extern float source_decon[4096];
-
   private:
+    int temp_var;
 
 };
 

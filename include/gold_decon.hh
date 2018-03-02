@@ -7,7 +7,14 @@ class gold_decon
 {
 
   public:
-    gold_decon();
+    gold_decon(float**,
+               float*,
+               int,
+               int,
+               int,
+               int,
+               double
+               );
     ~gold_decon();
 
   private:

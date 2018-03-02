@@ -1,5 +1,6 @@
 // Reading in radiation detector output files
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -14,11 +15,10 @@ using namespace std;
 data_read::data_read()
 {
 
+  cout << "begin data read." << endl;
+
   PGconn   *conn;
   PGresult *res;
-  int      rec_count;
-  int      row;
-  int      col;
 
   conn = PQconnectdb("dbname=det_test_db user=postgres password=postgres hostaddr = 127.0.0.1 port = 5432");
 
@@ -77,42 +77,15 @@ data_read::data_read()
       }
   }
 
+  data_mat_len = data_mat[8].size();
+
   puts("==========================");
 
   PQclear(res);
 
   PQfinish(conn);
 
-  sim = 0;
-  // sim = 1;
-  if(sim == 0)
-  {
-    data_mat.clear();
-
-    ifstream inFile;
-
-    for(k=0; k < 5; k++)
-    {
-
-      inFile.open("source_sim.txt");
-      if (!inFile)
-      {
-        cout << "Unable to open file";
-        exit(1); // terminate with error
-      }
-
-      while (inFile >> x)
-      {
-        temp.push_back(x);
-      }
-
-      data_mat.push_back(temp);
-
-      inFile.close();
-
-    }
-  }
-  return data_mat;
+  cout << "end data read." << endl;
 
 }
 

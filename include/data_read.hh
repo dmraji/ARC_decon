@@ -3,6 +3,9 @@
 
 using namespace std;
 
+extern std::vector<std::vector <float> > data_mat;
+extern int data_mat_len;
+
 class data_read
 {
 
@@ -11,13 +14,15 @@ class data_read
     data_read();
     ~data_read();
 
-    extern std::vector<std::vector <float> > data_mat;
-
   private:
 
     vector<float> temp;
 
-    int sim;
+    int rec_count;
+    int row;
+    int col;
+
+    float x;
 
 };
 
