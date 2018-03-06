@@ -11,10 +11,10 @@ src/data_read_test
 src/data_read_test.cc
 tests/*
 source_sims/*
-# test.txt
-# 2_21_am241.txt
-# 2_21_co60.txt
-# 2_21_cs137.txt
-# 2_21_hour_BG.txt
-# 2_21_natU.txt
-# 2_21_ra226.txt
+test.txt
+2_21_am241.txt
+2_21_co60.txt
+2_21_cs137.txt
+2_21_hour_BG.txt
+2_21_natU.txt
+2_21_ra226.txt

@@ -20,7 +20,10 @@ class gold_decon
   private:
 
     int i, j, k, lindex, lhx = 0, repet;
+    int wksp_len;
    	double lda, ldb, ldc, area;
+
+    std::vector<double> lda_vec;
 
 };
 

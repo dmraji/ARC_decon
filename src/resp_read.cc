@@ -12,7 +12,7 @@ using namespace std;
 resp_read::resp_read()
 {
 
-  spectra_names.push_back("2_21_hour_BG.txt");
+  // spectra_names.push_back("2_21_hour_BG.txt");
   spectra_names.push_back("2_21_am241.txt");
   spectra_names.push_back("2_21_co60.txt");
   spectra_names.push_back("2_21_cs137.txt");
@@ -21,7 +21,7 @@ resp_read::resp_read()
 
   ifstream inFile;
 
-  for(int k=0; k < 6; k++)
+  for(int k=0; k < 5; k++)
   {
 
     inFile.open(spectra_names[k]);
@@ -30,6 +30,8 @@ resp_read::resp_read()
       cout << "Unable to open file";
       exit(1); // terminate with error
     }
+    
+    temp.clear();
 
     while (inFile >> x)
     {
