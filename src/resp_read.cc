@@ -30,12 +30,21 @@ resp_read::resp_read()
       cout << "Unable to open file";
       exit(1); // terminate with error
     }
-    
+
     temp.clear();
+    spect_sum = 0;
 
     while (inFile >> x)
     {
       temp.push_back(x);
+      spect_sum = spect_sum + x;
+    }
+
+    std::cout << spect_sum << '\n';
+
+    for(int cs = 0; cs < 4096; cs++)
+    {
+      temp[cs] = temp[cs] / spect_sum;
     }
 
     resp_mat_read.push_back(temp);

@@ -3,6 +3,8 @@
 #include <iomanip>
 #include <fstream>
 #include <vector>
+#include <ctime>
+#include <cstdio>
 
 #include "data_read.hh"
 #include "gold_decon.hh"
@@ -20,6 +22,11 @@ vector< vector<float> > resp_mat_read;
 float source_decon[4096];
 
 int main(int argc, char** argv) {
+
+  std::clock_t start;
+  double duration;
+
+  start = std::clock();
 
   // cout << "hi.\n";
 
@@ -78,16 +85,21 @@ int main(int argc, char** argv) {
   }
   else
   {
-    data_mat_len = 4096;
+    data_mat_len = chs;
     for (int dat_ind = 0; dat_ind < data_mat_len; dat_ind++)
     {
       source_decon[dat_ind] = data_sim[dat_ind];
     }
   }
 
+  for(int cs = 0; cs < chs; cs++)
+  {
+    source_decon[cs] = source_decon[cs] / (2.0 * 3600);
+  }
+
   int num_iter = 10000;
   int num_rep = 10;
-  double boost = 2;
+  double boost = 10;
 
   // !!
   //
@@ -111,10 +123,12 @@ int main(int argc, char** argv) {
   // spatial_decon spaceOut(// array of number of mesh points with counts as values
   //                        );
 
+  duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
-  std::cout << "main ln 110" << '\n';
+  std::cout << "time: " << duration << '\n';
 
-  for(int i = 0; i < num_spectra; ++i) {
+  for(int i = 0; i < num_spectra; ++i)
+  {
     delete [] response_matrix[i];
   }
 

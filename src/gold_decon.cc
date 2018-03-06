@@ -64,7 +64,7 @@ gold_decon::gold_decon(float **respMatrix,
 		*/
    	double *working_space = new double[ssizex * ssizey + 2 * ssizey * ssizey + 4 * ssizex];
 		wksp_len = ssizex * ssizey + 2 * ssizey * ssizey + 4 * ssizex;
-		std::cout << wksp_len << '\n';
+		// std::cout << wksp_len << '\n';
 
 		// Print response matrix for debugging
 
@@ -291,7 +291,7 @@ gold_decon::gold_decon(float **respMatrix,
    	for (repet = 0; repet < numberRepetitions; repet++)
 		{
 
-			std::cout << "Repet " << repet << '\n';
+			// std::cout << "Repet " << repet << '\n';
 
     	if (repet != 0)
 			{
@@ -305,7 +305,7 @@ gold_decon::gold_decon(float **respMatrix,
     	for (lindex = 0; lindex < numberIterations; lindex++)
 			{
 
-				std::cout << "Iter " << lindex << '\n' << '\n' << '\n';
+				// std::cout << "Iter " << lindex << '\n' << '\n' << '\n';
 
        	for (i = 0; i < ssizey; i++)
 				{
@@ -335,10 +335,11 @@ gold_decon::gold_decon(float **respMatrix,
         	lda = lda * ldb;
         	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i] = lda;
 
-					if(i==0)
-					{
-						std::cout << lda << '\n';
-					}
+					// if(i==0)
+					// {
+					// 	std::cout << lda << '\n';
+					// }
+
        	}
 
        	for (i = 0; i < ssizey; i++)

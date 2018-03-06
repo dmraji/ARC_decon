@@ -21,6 +21,7 @@ class resp_read {
     std::vector <float> temp;
 
     int x;
+    float spect_sum;
 
 };
 
