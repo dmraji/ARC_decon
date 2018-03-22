@@ -3,6 +3,8 @@
 
 using namespace std;
 
+extern int iso_count;
+
 class gold_decon
 {
 
@@ -22,7 +24,6 @@ class gold_decon
     int i, j, k, lindex, lhx = 0, repet;
     int wksp_len;
    	double lda, ldb, ldc, area;
-
     std::vector<double> lda_vec;
 
 };

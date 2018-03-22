@@ -357,6 +357,8 @@ gold_decon::gold_decon(float **respMatrix,
    	}
 		// END OF REPETITIONS
 
+		iso_count = 0;
+
 		/*write back resulting spectrum*/
    	for (i = 0; i < ssizex; i++)
 		{
@@ -365,6 +367,7 @@ gold_decon::gold_decon(float **respMatrix,
 			{
      		source[i] = working_space[ssizex * ssizey + 2 * ssizey * ssizey + i];
 				cout << "output " << i << ": " << source[i] << endl;
+				iso_count = iso_count + 1;
 			}
     	else
 			{

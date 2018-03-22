@@ -11,6 +11,7 @@
 #include "resp_read.hh"
 #include "histo.hh"
 #include "sim_source.hh"
+#include "spatial_decon.hh"
 
 using namespace std;
 
@@ -18,8 +19,13 @@ vector< vector<float> > data_mat;
 int data_mat_len;
 
 vector<float> data_sim;
+float space_sim[24];
+
 vector< vector<float> > resp_mat_read;
+vector<float> resp_space_mat_read;
 float source_decon[4096];
+
+int iso_count;
 
 int main(int argc, char** argv) {
 
@@ -37,26 +43,34 @@ int main(int argc, char** argv) {
   // Call to function to read response files
   resp_read resp;
 
-  // initialize 2D dynamic array for response
+  // initialize 2D dynamic array for responses
   float** response_matrix = new float*[num_spectra];
   for(int i = 0; i < num_spectra; i++)
   {
     response_matrix[i] = new float[chs];
   }
 
-  cout << "ln 39 main." << endl;
-
   for(int j = 0; j < chs; j++)
   {
-    for(int i = 0; i < num_spectra; i++)
+    for(i = 0; i < num_spectra; i++)
     {
       response_matrix[i][j] = resp_mat_read[i][j];
-
 
     }
   }
 
-  cout << "ln 49 main." << endl;
+  int space_depth = 4;
+  int space_breadth = 6;
+  int resp_space_len = space_depth * space_breadth;
+
+  float* response_space_matrix = new float[resp_space_len];
+
+  for(i = 0; i < resp_space_len; i++)
+  {
+    response_space_matrix[i] = resp_space_mat_read[i]
+  }
+
+  cout << "ln 73 main." << endl;
 
   // change this to stop using sim source
   int sim = 1;
@@ -70,7 +84,7 @@ int main(int argc, char** argv) {
     data_read data;
   }
 
-  cout << "ln 61 main." << endl;
+  cout << "ln 87 main." << endl;
 
   float* source_mat = new float[data_mat_len];
 
@@ -98,12 +112,12 @@ int main(int argc, char** argv) {
   }
 
   int num_iter = 10000;
-  int num_rep = 10;
+  int num_rep = 5;
   double boost = 10;
 
   // !!
   //
-  // NORMALIZE RESP BY ITENTSITY (TOTAL COUNTS) AND SOURCE BY TIME (2*3600)
+  // NORMALIZED RESP BY ITENTSITY (TOTAL COUNTS) AND SOURCE BY TIME (2*3600)
   //
   // !!
   gold_decon callIt(response_matrix,
@@ -120,8 +134,17 @@ int main(int argc, char** argv) {
   //   cout << source_decon[printer] << endl;
   // }
 
-  // spatial_decon spaceOut(// array of number of mesh points with counts as values
-  //                        );
+  // Specify fineness/coarseness of spatial deconvolution (3 most coarse, 9 most fine)
+  int fine = 3;
+  int space_iter = 50;
+
+  spatial_decon spaceOut(response_space_matrix,
+                         resp_space_len,
+                         source_space,
+                         fine,
+                         iso_count,
+                         space_iter
+                         );
 
   duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
@@ -133,6 +156,8 @@ int main(int argc, char** argv) {
   }
 
   delete [] response_matrix;
+
+  delete [] response_space_matrix;
 
   return 0;
 }

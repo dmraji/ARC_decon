@@ -4,6 +4,7 @@
 using namespace std;
 
 extern std::vector<float> data_sim;
+extern std::vector<float> space_sim;
 
 class sim_source
 {
