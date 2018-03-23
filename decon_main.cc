@@ -104,6 +104,8 @@ int main(int argc, char** argv) {
     {
       source_decon[dat_ind] = data_sim[dat_ind];
     }
+
+    // ADD LINES FOR source_space SIM READ
   }
 
   for(int cs = 0; cs < chs; cs++)
@@ -134,16 +136,20 @@ int main(int argc, char** argv) {
   //   cout << source_decon[printer] << endl;
   // }
 
-  // Specify fineness/coarseness of spatial deconvolution (3 most coarse, 9 most fine)
+  // Specify fineness/coarseness of spatial deconvolution (2 most coarse, 6 most fine)
   int fine = 3;
   int space_iter = 50;
+
+  // Turn on for farther "view", better spatial algorithm; off for speed;
+  int future_sight = 1;
 
   spatial_decon spaceOut(response_space_matrix,
                          resp_space_len,
                          source_space,
                          fine,
                          iso_count,
-                         space_iter
+                         space_iter,
+                         future_sight
                          );
 
   duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
