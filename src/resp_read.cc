@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cmath>
 
 #include "resp_read.hh"
 
@@ -20,39 +21,10 @@ resp_read::resp_read()
   spectra_names.push_back("2_21_natU.txt");
   spectra_names.push_back("2_21_ra226.txt");
 
-  // Space response
-  space_names.push_back("1-1_space_3-09.txt");
-  space_names.push_back("1-4_space_3-09.txt");
-  space_names.push_back("1-7_space_3-09.txt");
-  space_names.push_back("1-10_space_3-09.txt");
-  space_names.push_back("1-13_space_3-09.txt");
-  space_names.push_back("1-16_space_3-09.txt");
-  space_names.push_back("4-1_space_3-09.txt");
-  space_names.push_back("4-4_space_3-09.txt");
-  space_names.push_back("4-7_space_3-09.txt");
-  space_names.push_back("4-10_space_3-09.txt");
-  space_names.push_back("4-13_space_3-09.txt");
-  space_names.push_back("4-16_space_3-09.txt");
-  space_names.push_back("7-1_space_3-09.txt");
-  space_names.push_back("7-4_space_3-09.txt");
-  space_names.push_back("7-7_space_3-09.txt");
-  space_names.push_back("7-10_space_3-09.txt");
-  space_names.push_back("7-13_space_3-09.txt");
-  space_names.push_back("7-16_space_3-09.txt");
-  space_names.push_back("10-1_space_3-09.txt");
-  space_names.push_back("10-4_space_3-09.txt");
-  space_names.push_back("10-7_space_3-09.txt");
-  space_names.push_back("10-10_space_3-09.txt");
-  space_names.push_back("10-13_space_3-09.txt");
-  space_names.push_back("10-16_space_3-09.txt");
-
-  // space_names.push_back("background_space_3-09.txt");
-  // space_names.push_back("backgroundPost_space_3-09.txt");
-
   ifstream inFile;
 
   // Spectral response assemby
-  for(int k=0; k < 5; k++)
+  for(int k = 0; k < 5; k++)
   {
 
     inFile.open(spectra_names[k]);
@@ -85,19 +57,99 @@ resp_read::resp_read()
 
   }
 
+  // Space response
+
+  int xi = {1, 4, 7, 10, 13, 16,  19,  22,  25};
+  int yi = {7, 4, 1, -2, -5, -8, -11, -14, -17};
+
+  for(int yn = 0; yn < 9; yn++)
+  {
+    for(int xn = 0; xn < 9; xn++)
+    {
+      space_n = xi[xn] << "-" << yi[yn] << "_space_3-09.txt";
+      inFile.open(space_n);
+      if(!inFile)
+      {
+        space_n = xi[xn] << "-" << yi[yn] << "_space_3-14.txt";
+        inFile.open(space_n);
+        if(!inFile)
+        {
+          space_n = xi[xn] << "-" << yi[yn] << "_space_3-22.txt";
+          inFile.open(space_n);
+          if(!inFile)
+          {
+
+            // Provision to fill in missing data by "flipping" equidistant data
+            if(yn < 1 && xn < 19)
+            {
+              space_n = xi[yn] << "-" << yi[xn] << "_space_3-09.txt";
+              inFile.open(space_n);
+              if(!inFile)
+              {
+                space_n = xi[yn] << "-" << yi[xn] << "_space_3-14.txt";
+                inFile.open(space_n);
+                if(!inFile)
+                {
+                  space_n = xi[yn] << "-" << yi[xn] << "_space_3-22.txt";
+                  inFile.open(space_n);
+                  if(!inFile)
+                  {
+                    cout << "Unable to open file";
+                    exit(1); // terminate with error
+                  }
+                  else{
+                    space_names.push_back(space_n);
+                    inFile.close();
+                  }
+                }
+                else{
+                  space_names.push_back(space_n);
+                  inFile.close();
+                }
+              }
+              else{
+                space_names.push_back(space_n);
+                inFile.close();
+              }
+            }
+            else
+            {
+              cout << "Unable to open file";
+              exit(1); // terminate with error
+            }
+          }
+          else
+          {
+            space_names.push_back(space_n);
+            inFile.close();
+          }
+        }
+        else
+        {
+          space_names.push_back(space_n);
+          inFile.close();
+        }
+      }
+      else
+      {
+        space_names.push_back(space_n);
+        inFile.close();
+      }
+    }
+  }
+
+  // space_names.push_back("background_space_3-09.txt");
+  // space_names.push_back("backgroundPost_space_3-09.txt");
+
   // Spatial response assembly
 
   count_time = 300;
+  start_k = 0;
 
-  for(k=0; k < 24; k++)
+  for(k = start_k; k < 81; k++)
   {
 
     inFile.open(space_names[k]);
-    if (!inFile)
-    {
-      cout << "Unable to open file";
-      exit(1); // terminate with error
-    }
 
     spect_sum = 0;
 

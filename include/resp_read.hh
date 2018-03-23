@@ -13,8 +13,6 @@ class resp_read {
     resp_read();
     ~resp_read();
 
-
-
   private:
 
     std::vector <string> spectra_names;
@@ -22,9 +20,9 @@ class resp_read {
 
     std::vector <float> temp;
 
-    int x;
-    int count_time;
+    int x, count_time;
     float spect_sum;
+    string space_n;
 
 };
 
