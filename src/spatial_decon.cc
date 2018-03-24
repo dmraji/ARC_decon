@@ -74,7 +74,7 @@ spatial_decon::spatial_decon(float *resp_space,
   combos = 0;
   while(iso_iter > 0)
   {
-    combos = combos + factorial(fine * fine) / (factorial(iso_iter) * factorial(fine * fine - iso_iter));
+    combos =+ factorial(fine * fine) / (factorial(iso_iter) * factorial(fine * fine - iso_iter));
     isos_iter--;
   }
 
@@ -101,8 +101,10 @@ spatial_decon::spatial_decon(float *resp_space,
   // For one iso
   for(int k = 0; k < fine * fine; k++)
   {
+
     // "Seed" (source) mesh locations in macro-meshes
     response_spatial_reference[k][floor(k / fine)][k % fine] = resp_space[0];
+
     for(int deg_ind_x = 0; deg_ind_x < degrees.size(); deg_ind_x++)
     {
       for(int deg_ind_y = 0; deg_ind_y < degrees.size(); deg_ind_y++)
@@ -137,8 +139,10 @@ spatial_decon::spatial_decon(float *resp_space,
       {
         for(int layer_ind_b = layer_ind_a + 1; layer_ind_b < fine * fine; layer_ind_b++)
         {
+
           if(iso_ind == 2)
           {
+
             for(int ty = 0; ty < fine; ty++)
             {
               for(int tx = 0; tx < fine; tx++)
@@ -149,7 +153,6 @@ spatial_decon::spatial_decon(float *resp_space,
                 over_temp[ty][tx] = temp_layer_a[ty][tx] + temp_layer_b[ty][tx];
 
                 response_spatial_reference[k][ty][tx] = over_temp[ty][tx];
-
               }
             }
 
@@ -160,6 +163,7 @@ spatial_decon::spatial_decon(float *resp_space,
           {
             for(int layer_ind_c = layer_ind_b + 1; layer_ind_c < fine * fine; layer_ind_c++)
             {
+
               for(int ty = 0; ty < fine; ty++)
               {
                 for(int tx = 0; tx < fine; tx++)
@@ -168,7 +172,7 @@ spatial_decon::spatial_decon(float *resp_space,
                   temp_layer_b[ty][tx] = response_spatial_reference[layer_ind_b][ty][tx];
                   temp_layer_c[ty][tx] = response_spatial_reference[layer_ind_c][ty][tx];
 
-                  over_temp[ty][tx] = temp_layer_a[ty][tx] + temp_layer_b[ty][tx];
+                  over_temp[ty][tx] = temp_layer_a[ty][tx] + temp_layer_b[ty][tx] + temp_layer_c[ty][tx];
 
                   response_spatial_reference[k][ty][tx] = over_temp[ty][tx];
 
@@ -209,6 +213,32 @@ spatial_decon::spatial_decon(float *resp_space,
       }
     }
 
+    // Normalization by max value per layer of macro-mesh
+    for(lay_i = 0; lay_i < combos; lay_i++)
+    {
+      macro_max = 0;
+
+      for(i = 0; i < fine - 2; ++i)
+      {
+        for(j = 0; j < fine - 2; ++j)
+        {
+          if(response_spatial_reference_expo[lay_i][i][j] > macro_max)
+          {
+            macro_max = response_spatial_reference_expo[lay_i][i][j];
+          }
+        }
+      }
+
+      for(i = 0; i < fine - 2; ++i)
+      {
+        for(j = 0; j < fine - 2; ++j)
+        {
+          response_spatial_reference_expo[lay_i][i][j] =/ macro_max;
+        }
+      }
+    }
+
+    // Delete "finer" macro-mesh
     for(i = 0; i < fine; ++i)
     {
       for(j = 0; j < fine; ++j)
@@ -219,11 +249,15 @@ spatial_decon::spatial_decon(float *resp_space,
     delete [] response_spatial_reference;
 
   }
+
   /*
       ~~~ END OF RESPONSE ASSEMBLY ~~~
   */
 
-  // Begin iterations
+  /*
+      ~~~ BEGIN DECONVOLUTION ITERATIONS ~~~
+  */
+
   for(int l = 0; l < iter; l++)
   {
 

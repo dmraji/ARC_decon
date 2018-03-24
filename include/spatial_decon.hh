@@ -20,7 +20,7 @@ class spatial_decon {
   private:
 
     int resp_index, combos, deg_temp, layer_save, finer, isos, iso_iter;
-    float att_cps;
+    float att_cps, macro_max;
     std::vector<int> degrees;
 
 };
