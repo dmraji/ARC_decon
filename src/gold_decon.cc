@@ -281,13 +281,13 @@ gold_decon::gold_decon(float **respMatrix,
       working_space[ssizex * ssizey + 2 * ssizey * ssizey + 2 * ssizex + i] =	working_space[ssizex * ssizey + 2 * ssizey * ssizey + 3 * ssizex + i];
 		}
 
-						/*initialization in resulting vector */
+		/*initialization in resulting vector */
    	for (i = 0; i < ssizey; i++)
 		{
       working_space[ssizex * ssizey + 2 * ssizey * ssizey + i] = 1;
 		}
 
-        	/***START OF ITERATIONS***/
+    /***START OF ITERATIONS***/
    	for (repet = 0; repet < numberRepetitions; repet++)
 		{
 
@@ -359,15 +359,39 @@ gold_decon::gold_decon(float **respMatrix,
 
 		iso_count = 0;
 
+		iso_names.push_back("Co-57");
+		iso_names.push_back("Pu-239");
+		iso_names.push_back("Ba-133");
+		iso_names.push_back("Cf-252");
+		iso_names.push_back("Cs-137");
+		iso_names.push_back("Th-232");
+		iso_names.push_back("Am-241");
+		iso_names.push_back("Natural Uranium");
+		iso_names.push_back("U-235");
+		iso_names.push_back("Co-60");
+		iso_names.push_back("Ra-226");
+
+		// iso_names.push_back("Am-241");
+		// iso_names.push_back("Co-60");
+		// iso_names.push_back("Natural Uranium");
+		// iso_names.push_back("Ra-226");
+		// iso_names.push_back("Cs-137");
+
 		/*write back resulting spectrum*/
+
+		std::cout << '\n';
+
    	for (i = 0; i < ssizex; i++)
 		{
 
     	if (i < ssizey)
 			{
      		source[i] = working_space[ssizex * ssizey + 2 * ssizey * ssizey + i];
-				cout << "output " << i << ": " << source[i] << endl;
-				iso_count = iso_count + 1;
+				cout << iso_names[i] << " intensity: " << source[i] << endl;
+				if(source[i] != 0)
+				{
+					iso_count = iso_count + 1;
+				}
 			}
     	else
 			{
@@ -375,6 +399,8 @@ gold_decon::gold_decon(float **respMatrix,
 			}
 
    	}
+
+		std::cout << '\n' << "Distinct Isotopes Predicted: " << iso_count << '\n' << endl;
 
 		// for(int wksp_print=0; wksp_print < 4096; wksp_print++)
 		// {
