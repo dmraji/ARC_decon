@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <vector>
 #include <ctime>
+#include <algorithm>
 
 #include "spatial_decon.hh"
 
@@ -28,7 +29,9 @@ spatial_decon::spatial_decon(float *resp_space,
                              int fine,
                              int iso_count,
                              int iter,
-                             int future_sight
+                             int future_sight,
+                             int sim,
+                             int source_num_sim
                              )
 {
 
@@ -41,13 +44,29 @@ spatial_decon::spatial_decon(float *resp_space,
     exit(1);
   }
 
+
   // Setting up predictive pseudo-meshes
   if(future_sight == 1)
   {
     fine = fine + 2;
+
+    // Validate fineness selection considering source size
+    while(survsizey * survsizex < (fine - 1) * (fine - 1))
+    {
+      if(fine >= 7)
+      {
+        std::cout << "Not enough source data to deconvolve. Lowering fineness..." << '\n';
+        fine = fine - 2;
+      }
+      else
+      {
+        std::cout << "Not enough source data. Terminating." << '\n';
+        exit(1);
+      }
+    }
   }
 
-  conf_levels = {0.90, 0.925, 0.94, 0.96, 0.97};
+  conf_levels = {0.95, 0.97, 0.98};
 
   /* Notes on response space:
 
@@ -58,7 +77,7 @@ spatial_decon::spatial_decon(float *resp_space,
 
   */
 
-  // Response cm distance vector, ordered to index in conj. with counts
+  /* Response cm distance vector, ordered to index in conj. with counts
   float resp_dist[81] = {4.243,  9.487,  15.297, 21.213, 27.166, 33.136, 39.115, 45.100, 51.088,
                          9.487,  12.768, 17.493, 22.847, 28.460, 34.205, 40.025, 45.891, 51.788,
                          15.297, 17.493, 21.213, 25.807, 30.887, 36.249, 41.785, 47.434, 53.160,
@@ -70,6 +89,8 @@ spatial_decon::spatial_decon(float *resp_space,
                          51.088, 51.788, 53.160, 55.154, 57.706, 60.745, 64.203, 68.015, 72.125
                          };
 
+  */
+
   /*  Number of layers in the response matrix
 
       We assume that, at max, each macro-mesh will see up to 3 isotopes
@@ -77,13 +98,17 @@ spatial_decon::spatial_decon(float *resp_space,
   */
 
   // For sim stuff
-  iso_count = 3;
+  if(sim == 1)
+  {
+    iso_count = source_num_sim;
+  }
+
 
   std::cout << "space 69" << '\n';
 
-  if(iso_count > 3)
+  if(iso_count > 2)
   {
-    isos = 3;
+    isos = 2;
   }
   else
   {
@@ -240,7 +265,7 @@ spatial_decon::spatial_decon(float *resp_space,
   std::cout << "space 210" << '\n';
 
   // For more than one iso
-  if(iso_count > 1)
+  if(isos > 1)
   {
     // Storing the index of what the next layer of the response matrix will be
     float over_temp[fine][fine];
@@ -378,10 +403,20 @@ spatial_decon::spatial_decon(float *resp_space,
 
   // Overall minimum differences are not reset in iteration
   //  These vectors are to be used for final result determination
-  min_min_vec = {10000, 10000, 10000};
-  compan_vec = {{-1, -1}, {-1, -1}, {-1, -1}};
+  for(int i = 0; i < iso_count; i++)
+  {
+    compan_vec.push_back({-1, -1});
+    min_min_vec.push_back(10000);
+  }
   layer_seek = 0;
   iso_found = 0;
+  survskipx.clear();
+  survskipy.clear();
+  for(int i = 0; i < 9; i++)
+  {
+    survskipx.push_back(0);
+    survskipy.push_back(0);
+  }
 
   // Each iteration resets the random error
   for(int l = 0; l < iter; l++)
@@ -457,8 +492,10 @@ spatial_decon::spatial_decon(float *resp_space,
     survy_save = 0;
     survx_save = 0;
 
+    no_rep = 0;
+
     // Iterate through survey space to take differences between response and source
-    for(int isos_ind = 1; isos_ind <= isos; isos_ind++)
+    for(int isos_ind = 1; isos_ind <= iso_count; isos_ind++)
     {
       // Re(set) temp and tracker vars
       min_dif = 1000;
@@ -475,6 +512,27 @@ spatial_decon::spatial_decon(float *resp_space,
       {
         for(int survx = survx_save; survx < survsizex; survx++)
         {
+
+          // Skip already found source meshes
+          passer = 0;
+          if(!(std::all_of(survskipy.begin(), survskipy.end(), [](int i) { return i==0; })) &&
+             !(std::all_of(survskipx.begin(), survskipx.end(), [](int i) { return i==0; })))
+          {
+            for(int ii = 0; ii < 9; ii++)
+            {
+              if(survskipy[ii] == survy && survskipx[ii] == survx)
+              {
+                passer = 1;
+              }
+            }
+            if(passer == 1)
+            {
+              // std::cout << "skip" << '\n' << endl;
+              goto label;
+
+            }
+          }
+
           // Grab data from source the same size as macro-mesh
           real_ct = 0;
           for(int grady = 0; grady < fine - 2; grady++)
@@ -484,7 +542,7 @@ spatial_decon::spatial_decon(float *resp_space,
               if( (survy - ((fine - 2) - 1) / 2 + grady > 0) && (survx - ((fine - 2) - 1) / 2 + gradx > 0) &&
                 (survy - ((fine - 2) - 1) / 2 + grady < survsizey) && (survx - ((fine - 2) - 1) / 2 + gradx < survsizex) )
               {
-                std::cout << survy - ((fine - 2) - 1) / 2 + grady << '\n';
+                // std::cout << survy - ((fine - 2) - 1) / 2 + grady << '\n';
                 temp_arr[grady][gradx] = source_space[survy - ((fine - 2) - 1) / 2 + grady][survx - ((fine - 2) - 1) / 2 + gradx];
                 real_ct = real_ct + 1;
               }
@@ -510,7 +568,7 @@ spatial_decon::spatial_decon(float *resp_space,
           // Ensure that survey location has enough data to comapre
           if(real_ct > round( ((fine - 2) * (fine - 2)) / 2 ))
           {
-            std::cout << "live one" << '\n';
+            // std::cout << "live one" << '\n';
 
             // Normalize survey macro-mesh to highest value
             max_ele = 0;
@@ -563,65 +621,97 @@ spatial_decon::spatial_decon(float *resp_space,
                 // std::cout << min_dif << '\n';
                 if(dif_sum < min_min_vec[isos_ind - 1])
                 {
-                  min_min_vec[isos_ind - 1] = dif_sum;
-                  // std::cout << min_min_vec[isos_ind - 1] << '\n';
-                  conf = 1 - dif_sum / resp_sum;
-                  // std::cout << "conf: " << conf << '\n';
-                  layer_seek = layer_thru;
-                  if(conf > conf_levels[6 - (fine - 2)])
-                  {
-                    // std::cout << "iso #" << isos_ind << ", iter: " << l << '\n';
-                    survx_save = survx + 1;
-                    // std::cout << "survx_save: " << survx_save << '\n';
-                    survy_save = survy + 1;
-                    // std::cout << "survy_save: " << survy_save << '\n';
-                    layer_thru = combos;
-                    survx = survsizex;
-                    survy = survsizey;
-                    iso_found = 1;
-                  }
+
+                    min_min_vec[isos_ind - 1] = dif_sum;
+                    // std::cout << min_min_vec[isos_ind - 1] << '\n';
+                    conf = 1 - dif_sum / resp_sum;
+                    // std::cout << "conf: " << conf << '\n';
+                    layer_seek = layer_thru;
+                    if(conf > conf_levels[2 - ((fine - 2) - 1) / 2 - 1])
+                    {
+                      // std::cout << "iso #" << isos_ind << ", iter: " << l << '\n';
+                      survx_save = survx + 1;
+                      // std::cout << "survx_save: " << survx_save << '\n';
+                      survy_save = survy + 1;
+                      // std::cout << "survy_save: " << survy_save << '\n';
+
+                      // Record keeping block
+                      max_ele_repo = 0;
+                      savey = 0;
+                      savex = 0;
+                      for(int grady = 0; grady < fine - 2; grady++)
+                      {
+                        for(int gradx = 0; gradx < fine - 2; gradx++)
+                        {
+                          if(future_sight == 1)
+                          {
+                            // Find max data value
+                            if(response_spatial_reference_expo_iter[layer_seek][grady][gradx] > max_ele_repo)
+                            {
+                              max_ele_repo = response_spatial_reference_expo_iter[layer_seek][grady][gradx];
+                              savey = grady;
+                              savex = gradx;
+                            }
+                          }
+                          else
+                          {
+                            if(response_spatial_reference[layer_seek][grady][gradx] > max_ele_repo)
+                            {
+                              max_ele_repo = response_spatial_reference[layer_seek][grady][gradx];
+                              savey = grady;
+                              savex = gradx;
+                            }
+                          }
+                        }
+                      }
+
+                      // Write predicted locations to temp vectors
+                      for(int c = 0; c < compan_vec.size(); c++)
+                      {
+                        if(compan_vec[c][0] == survy + savey - floor((fine - 2) / 2) && compan_vec[c][1] == survx + savex - floor((fine - 2) / 2))
+                        {
+                          no_rep = 1;
+                        }
+                      }
+                      if(no_rep == 0)
+                      {
+                        compan_vec[isos_ind - 1][0] = survy + savey - floor((fine - 2) / 2);
+                        // std::cout << "y res: " << survy + savey - floor((fine - 2) / 2) << '\n';
+
+                        compan_vec[isos_ind - 1][1] = survx + savex - floor((fine - 2) / 2);
+                        // std::cout << "x res: " << survx + savex - floor((fine - 2) / 2) << '\n';
+                      }
+
+                      for(int iii = 0; iii < 3; iii++)
+                      {
+                        for(int iiii = 0; iiii < 3; iiii++)
+                        {
+                          survskipy[iiii + (iii * 3)] = survy - 1 + iii;
+                          survskipx[iiii + (iii * 3)] = survx - 1 + iii;
+                        }
+                      }
+
+                      layer_thru = combos;
+                      survx = survsizex;
+                      survy = survsizey;
+                      iso_found = 1;
+
+                    }
+
                 }
                 // std::cout << "hit: " << dif_sum << '\n';
               }
 
             }
 
-            max_ele_repo = 0;
-            savey = 0;
-            savex = 0;
-            for(int grady = 0; grady < fine - 2; grady++)
-            {
-              for(int gradx = 0; gradx < fine - 2; gradx++)
-              {
-                if(future_sight == 1)
-                {
-                  // Find max data value
-                  if(response_spatial_reference_expo_iter[layer_seek][grady][gradx] > max_ele_repo)
-                  {
-                    max_ele_repo = response_spatial_reference_expo_iter[layer_seek][grady][gradx];
-                    savey = grady;
-                    savex = gradx;
-                  }
-                }
-                else
-                {
-                  if(response_spatial_reference[layer_seek][grady][gradx] > max_ele_repo)
-                  {
-                    max_ele_repo = response_spatial_reference[layer_seek][grady][gradx];
-                    savey = grady;
-                    savex = gradx;
-                  }
-                }
-              }
-            }
 
-            // Write predicted locations to temp vectors
-            y_end.push_back(survy - savey);
-            x_end.push_back(survx - savex);
+
 
           }
           // std::cout << "x space: " << survx << '\n';
         }
+        label:
+          ;
         // std::cout << "y space: " << survy << '\n';
       }
       // std::cout << "iso ind: " << isos_ind << '\n';
@@ -634,8 +724,10 @@ spatial_decon::spatial_decon(float *resp_space,
     std::cout << "iter: " << l << '\n';
   }
 
-  end_ind.push_back(y_end);
-  end_ind.push_back(x_end);
+  for(int e = 0; e < iso_count; e++)
+  {
+    end_ind.push_back(compan_vec[e]);
+  }
 
   // for (int i = 0; i < end_ind.size(); i++)
   // {
@@ -645,7 +737,6 @@ spatial_decon::spatial_decon(float *resp_space,
   //     }
   // }
 
-  std::cout << "484" << '\n';
 
   if(future_sight == 0)
   {
