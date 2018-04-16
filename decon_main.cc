@@ -210,7 +210,7 @@ int main(int argc, char** argv) {
 
   // Specify fineness/coarseness of spatial deconvolution (3 most coarse, 5 intermediate, 7 most fine)
   //  ONLY USE 3, 5 OR 7
-  int fine = 5;
+  int fine = 7;
   int space_iter = 10;
 
   // Turn on for farther "view", better spatial algorithm; off for speed;

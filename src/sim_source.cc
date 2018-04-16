@@ -35,8 +35,8 @@ sim_source::sim_source(float *resp_space,
   inFile.close();
 
   // Assembly of spatial sim
-  sim_size_y = 80;
-  sim_size_x = 100;
+  sim_size_y = 100;
+  sim_size_x = 150;
 
   float surv_sim[sim_size_y][sim_size_x] = {};
 

@@ -66,7 +66,7 @@ spatial_decon::spatial_decon(float *resp_space,
     }
   }
 
-  conf_levels = {0.98, 0.97, 0.98};
+  conf_levels = {0.95, 0.97, 0.98};
 
   /* Notes on response space:
 
@@ -513,25 +513,7 @@ spatial_decon::spatial_decon(float *resp_space,
         for(int survx = survx_save; survx < survsizex; survx++)
         {
 
-          // Skip already found source meshes
-          passer = 0;
-          if(!(std::all_of(survskipy.begin(), survskipy.end(), [](int i) { return i==0; })) &&
-             !(std::all_of(survskipx.begin(), survskipx.end(), [](int i) { return i==0; })))
-          {
-            for(int ii = 0; ii < 9; ii++)
-            {
-              if(survskipy[ii] == survy && survskipx[ii] == survx)
-              {
-                passer = 1;
-              }
-            }
-            if(passer == 1)
-            {
-              // std::cout << "skip" << '\n' << endl;
-              goto label;
 
-            }
-          }
 
           // Grab data from source the same size as macro-mesh
           real_ct = 0;
@@ -563,8 +545,6 @@ spatial_decon::spatial_decon(float *resp_space,
           //     std::cout << '\n';
           // }
 
-          // std::cout << "373" << '\n';
-
           // Ensure that survey location has enough data to comapre
           if(real_ct > round( ((fine - 2) * (fine - 2)) / 2 ))
           {
@@ -594,7 +574,7 @@ spatial_decon::spatial_decon(float *resp_space,
             }
 
             // Take difference of data
-            for(int layer_thru = 0; layer_thru < combos; layer_thru++)
+            for(int layer_thru = 0; layer_thru < fine * fine; layer_thru++)
             {
               dif_sum = 0;
               resp_sum = 0;
@@ -698,92 +678,103 @@ spatial_decon::spatial_decon(float *resp_space,
                     }
 
                     // If layer was built from multiple seeds
-                    if(layer_seek > fine * fine)
-                    {
-
-                      for(int grady = 0; grady < fine - 2; grady++)
-                      {
-                        for(int gradx = 0; gradx < fine - 2; gradx++)
-                        {
-                          if(future_sight == 1)
-                          {
-                            // Find max data value
-                            if(response_spatial_reference_expo_iter[layer_seek][grady][gradx] > max2_ele_repo &&
-                               response_spatial_reference_expo_iter[layer_seek][grady][gradx] < max_ele_repo)
-                            {
-                              max2_ele_repo = response_spatial_reference_expo_iter[layer_seek][grady][gradx];
-                              savey2 = grady;
-                              savex2 = gradx;
-
-                              // Verfiy that secondaries aren't repeated
-                              for(int cc = 0; cc < save_survy_vec.size(); cc++)
-                              {
-                                if(save_survy_vec[cc] == survy + savey2 - floor((fine - 2) / 2) &&
-                                   save_survx_vec[cc] == survx + savex2 - floor((fine - 2) / 2))
-                                {
-                                  savey2 = -1;
-                                  savex2 = -1;
-                                }
-                              }
-                              for(int cc = 0; cc < save_survy2_vec.size(); cc++)
-                              {
-                                if(save_survy2_vec[cc] == survy + savey2 - floor((fine - 2) / 2) &&
-                                   save_survx2_vec[cc] == survx + savex2 - floor((fine - 2) / 2))
-                                {
-                                  savey2 = -1;
-                                  savex2 = -1;
-                                }
-                                else
-                                {
-                                  // if(pre_pass == 1)
-                                  // {
-                                  //   iso_pass = 1;
-                                  // }
-                                  // save_survy2_vec.push_back(survy + savey2 - floor((fine - 2) / 2));
-                                  // save_survx2_vec.push_back(survx + savex2 - floor((fine - 2) / 2));
-                                }
-                              }
-
-                            }
-                          }
-                          // else
-                          // {
-                          //   if(response_spatial_reference[layer_seek][grady][gradx] > max2_ele_repo &&
-                          //      response_spatial_reference[layer_seek][grady][gradx] < max_ele_repo)
-                          //   {
-                          //     max2_ele_repo = response_spatial_reference[layer_seek][grady][gradx];
-                          //     savey2 = grady;
-                          //     savex2 = gradx;
-                          //
-                          //   }
-                          // }
-                        }
-                      }
-                    }
+                    // if(layer_seek > fine * fine)
+                    // {
+                    //
+                    //   for(int grady = 0; grady < fine - 2; grady++)
+                    //   {
+                    //     for(int gradx = 0; gradx < fine - 2; gradx++)
+                    //     {
+                    //       if(future_sight == 1)
+                    //       {
+                    //         // Find max data value
+                    //         if(response_spatial_reference_expo_iter[layer_seek][grady][gradx] > max2_ele_repo &&
+                    //            response_spatial_reference_expo_iter[layer_seek][grady][gradx] < max_ele_repo)
+                    //         {
+                    //           max2_ele_repo = response_spatial_reference_expo_iter[layer_seek][grady][gradx];
+                    //           savey2 = grady;
+                    //           savex2 = gradx;
+                    //
+                    //           // Verfiy that secondaries aren't repeated
+                    //           for(int cc = 0; cc < save_survy_vec.size(); cc++)
+                    //           {
+                    //             if(save_survy_vec[cc] == survy + savey2 - floor((fine - 2) / 2) &&
+                    //                save_survx_vec[cc] == survx + savex2 - floor((fine - 2) / 2))
+                    //             {
+                    //               savey2 = -1;
+                    //               savex2 = -1;
+                    //             }
+                    //           }
+                    //           for(int cc = 0; cc < save_survy2_vec.size(); cc++)
+                    //           {
+                    //             if(save_survy2_vec[cc] == survy + savey2 - floor((fine - 2) / 2) &&
+                    //                save_survx2_vec[cc] == survx + savex2 - floor((fine - 2) / 2))
+                    //             {
+                    //               savey2 = -1;
+                    //               savex2 = -1;
+                    //             }
+                    //             else
+                    //             {
+                    //               if(pre_pass == 1)
+                    //               {
+                    //                 iso_pass = 1;
+                    //               }
+                    //               save_survy2_vec.push_back(survy + savey2 - floor((fine - 2) / 2));
+                    //               save_survx2_vec.push_back(survx + savex2 - floor((fine - 2) / 2));
+                    //             }
+                    //           }
+                    //
+                    //         }
+                    //       }
+                    //       else
+                    //       {
+                    //         if(response_spatial_reference[layer_seek][grady][gradx] > max2_ele_repo &&
+                    //            response_spatial_reference[layer_seek][grady][gradx] < max_ele_repo)
+                    //         {
+                    //           max2_ele_repo = response_spatial_reference[layer_seek][grady][gradx];
+                    //           savey2 = grady;
+                    //           savex2 = gradx;
+                    //
+                    //         }
+                    //       }
+                    //     }
+                    //   }
+                    // }
 
                     // Write predicted locations to temp vectors
-                    for(int c = 0; c < compan_vec.size(); c++)
-                    {
-                      if((compan_vec[c][0] == survy + savey - floor((fine - 2) / 2) &&
-                         compan_vec[c][1] == survx + savex - floor((fine - 2) / 2)) ||
-                         (abs(compan_vec[c][0] - survy + savey2 - floor((fine - 2) / 2)) +
-                         abs(compan_vec[c][1] - survx + savex2 - floor((fine - 2) / 2)) < 3))
-                      {
-                        no_rep = 1;
-                        if(savey2 > -1)
-                        {
-                          if((compan_vec[c][0] == survy + savey2 - floor((fine - 2) / 2) &&
-                              compan_vec[c][1] == survx + savex2 - floor((fine - 2) / 2)) ||
-                              (abs(compan_vec[c][0] - survy + savey2 - floor((fine - 2) / 2)) +
-                              abs(compan_vec[c][1] - survx + savex2 - floor((fine - 2) / 2)) < 3))
-                          {
-                            no_rep = 1;
-                          }
-                        }
-                      }
-                    }
+                    // for(int c = 0; c < compan_vec.size(); c++)
+                    // {
+                    //   if((compan_vec[c][0] == survy + savey - floor((fine - 2) / 2) &&
+                    //       compan_vec[c][1] == survx + savex - floor((fine - 2) / 2)) ||
+                    //      (abs(compan_vec[c][0] - survy + savey2 - floor((fine - 2) / 2)) +
+                    //       abs(compan_vec[c][1] - survx + savex2 - floor((fine - 2) / 2)) < 3))
+                    //   {
+                    //     no_rep = 1;
+                    //     if(savey2 > -1)
+                    //     {
+                    //       if((compan_vec[c][0] == survy + savey2 - floor((fine - 2) / 2) &&
+                    //           compan_vec[c][1] == survx + savex2 - floor((fine - 2) / 2)) ||
+                    //          (abs(compan_vec[c][0] - survy + savey2 - floor((fine - 2) / 2)) +
+                    //           abs(compan_vec[c][1] - survx + savex2 - floor((fine - 2) / 2)) < 3))
+                    //       {
+                    //         no_rep = 1;
+                    //       }
+                    //     }
+                    //   }
+                    // }
                     if(no_rep == 0 && savey > -1)
                     {
+
+                      // Skip already found source meshes
+                      for(int com = 0; com < compan_vec.size(); com++)
+                      {
+                        passer = 0;
+                        if((compan_vec[com][0] == survy + savey - floor((fine - 2) / 2)) && (compan_vec[com][1] == survx + savex - floor((fine - 2) / 2)))
+                        {
+                          goto label;
+                        }
+                      }
+
                       compan_vec[isos_ind - 1][0] = survy + savey - floor((fine - 2) / 2);
                       std::cout << "y res: " << survy + savey - floor((fine - 2) / 2) << '\n';
 
@@ -871,6 +862,17 @@ spatial_decon::spatial_decon(float *resp_space,
       }
     }
     delete [] response_spatial_reference;
+  }
+  else
+  {
+    for(int i = 0; i < fine - 2; ++i)
+    {
+      for(int j = 0; j < fine - 2; ++j)
+      {
+        delete [] response_spatial_reference_expo_iter[i][j];
+      }
+    }
+    delete [] response_spatial_reference_expo_iter;
   }
 
   std::cout << "End spatial decon." << '\n';
