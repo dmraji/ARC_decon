@@ -1,0 +1,16 @@
+As of Friday, 4/6
+
+TOP PRIORITY: Fix spatial deconvolution bugs and do testing
+  X - Random high and low values in spatial source simulation, may affect response reading as well
+  X - (find a way to prevent algorithm from restricted matches that are later overridden by pseudo-matches) Ensure algorithm keeps track of each source separately
+  X - Make it work for non-square surveys
+  X - Skip/alter fineness for processing if not enough survey data
+  X - Implement record keeping and data exporting
+    X - Validate recording of source meshes
+  - Benchmarking for numbers of isotopes, fineness, iterations
+
+- Benchmark energy deconvolution for combinations of isotopes
+- Implement intensity result normalization for energy deconvolution
+- Update data_read.cc to pick up data from database on robot (or on remote pc?)
+- Write additional class to export result data?
+X (remember to update this)- Doxygen?

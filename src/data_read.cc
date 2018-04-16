@@ -20,7 +20,8 @@ data_read::data_read()
   PGconn   *conn;
   PGresult *res;
 
-  conn = PQconnectdb("dbname=det_test_db user=postgres password=postgres hostaddr = 127.0.0.1 port = 5432");
+  // Look at Michael's shim code for connection over socket
+  conn = PQconnectdb("dbname=det_test_db user=postgres password=postgres hostaddr = 127.0.0.1 port = 5000");
 
   if (PQstatus(conn) == CONNECTION_BAD) {
          puts("We were unable to connect to the database");

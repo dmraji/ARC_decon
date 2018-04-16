@@ -15,19 +15,33 @@
 
 using namespace std;
 
+// Data var init
 vector< vector<float> > data_mat;
 int data_mat_len;
 
+// Sim var init
 vector<float> data_sim;
-float space_sim[24];
+vector< vector<float> > space_sim;
+vector< vector<int> > mesh_tracker;
+int source_num;
 
+// Resp var init
 vector< vector<float> > resp_mat_read;
 vector<float> resp_space_mat_read;
+
+// Spatial data init
+int space_datax, space_datay;
+vector< vector<int> > end_ind;
+
+// Source var init
 float source_decon[4096];
 
 int iso_count;
 
 int main(int argc, char** argv) {
+
+  // Allow true random numbers
+  srand(time(NULL));
 
   std::clock_t start;
   double duration;
@@ -38,10 +52,10 @@ int main(int argc, char** argv) {
 
   // Build response matrix from experimental spectra
   int chs = 4096;
-  int num_spectra = 5;
+  int num_spectra = 11;
 
   // Call to function to read response files
-  resp_read resp;
+  resp_read respIt;
 
   // initialize 2D dynamic array for responses
   float** response_matrix = new float*[num_spectra];
@@ -50,41 +64,95 @@ int main(int argc, char** argv) {
     response_matrix[i] = new float[chs];
   }
 
+  std::cout << "ln 53 main" << '\n';
+
   for(int j = 0; j < chs; j++)
   {
-    for(i = 0; i < num_spectra; i++)
+    for(int i = 0; i < num_spectra; i++)
     {
       response_matrix[i][j] = resp_mat_read[i][j];
+
 
     }
   }
 
-  int space_depth = 4;
-  int space_breadth = 6;
+  std::cout << "ln 62 main" << '\n';
+
+  // UPDATE THIS
+  int space_depth = 9;
+  int space_breadth = 9;
   int resp_space_len = space_depth * space_breadth;
 
   float* response_space_matrix = new float[resp_space_len];
 
-  for(i = 0; i < resp_space_len; i++)
+  for(int i = 0; i < resp_space_len; i++)
   {
-    response_space_matrix[i] = resp_space_mat_read[i]
+    response_space_matrix[i] = resp_space_mat_read[i];
+    // cout << response_space_matrix[i] << " ";
   }
 
-  cout << "ln 73 main." << endl;
+  cout << "ln 89 main." << endl;
+
+  int sourcex;
+  int sourcey;
+
+  int space_lenx;
+  int space_leny;
+
+  std::cout << "ln 100 main." << '\n';
 
   // change this to stop using sim source
   int sim = 1;
   if(sim == 1)
   {
-    sim_source sim;
+    source_num = 2;
+
+    sim_source simIt(response_space_matrix,
+                     resp_space_len,
+                     source_num
+                     );
+
+    // for (int i = 0; i < space_sim.size(); i++)
+    // {
+    //    for (int j = 0; j < space_sim[i].size(); j++)
+    //    {
+    //        cout << space_sim[i][j] << " ";
+    //    }
+    //    std::cout << '\n';
+    // }
+
+    space_lenx = space_sim.size();
+    space_leny = space_sim[0].size();
+
   }
   else
   {
     // Obtain vector of vectors via data read-in
-    data_read data;
+    data_read readIt;
+
+    space_lenx = space_datax;
+    space_leny = space_datay;
   }
 
-  cout << "ln 87 main." << endl;
+  // Define var to be called with decon class
+  float** source_space = new float*[space_lenx];
+  for(int i = 0; i < space_lenx; i++)
+  {
+    source_space[i] = new float[space_leny];
+  }
+
+  if(sim == 1)
+  {
+    for(int spacey = 0; spacey < space_sim.size(); spacey++)
+    {
+      for(int spacex = 0; spacex < space_sim[spacey].size(); spacex++)
+      {
+        source_space[spacey][spacex] = space_sim[spacey][spacex];
+      }
+    }
+  }
+
+  cout << "ln 97 main." << endl;
 
   float* source_mat = new float[data_mat_len];
 
@@ -94,7 +162,7 @@ int main(int argc, char** argv) {
     {
       source_mat[dat_ind] = data_mat[dat_ind][8];
     }
-    histo makeHist(source_mat,
+    histo histIt(source_mat,
                    data_mat_len);
   }
   else
@@ -110,12 +178,14 @@ int main(int argc, char** argv) {
 
   for(int cs = 0; cs < chs; cs++)
   {
-    source_decon[cs] = source_decon[cs] / (2.0 * 3600);
+    source_decon[cs] = source_decon[cs] / (1.0 * 1);
   }
 
   int num_iter = 10000;
   int num_rep = 5;
   double boost = 10;
+
+  // Energy deconvolution algorithm call
 
   // !!
   //
@@ -136,21 +206,41 @@ int main(int argc, char** argv) {
   //   cout << source_decon[printer] << endl;
   // }
 
-  // Specify fineness/coarseness of spatial deconvolution (2 most coarse, 6 most fine)
-  int fine = 3;
-  int space_iter = 50;
+  // Spatial deconvolution algorithm call
+
+  // Specify fineness/coarseness of spatial deconvolution (3 most coarse, 5 intermediate, 7 most fine)
+  //  ONLY USE 3, 5 OR 7
+  int fine = 5;
+  int space_iter = 10;
 
   // Turn on for farther "view", better spatial algorithm; off for speed;
   int future_sight = 1;
 
-  spatial_decon spaceOut(response_space_matrix,
+  spatial_decon spaceIt(response_space_matrix,
                          resp_space_len,
                          source_space,
+                         space_lenx,
+                         space_leny,
                          fine,
                          iso_count,
                          space_iter,
-                         future_sight
+                         future_sight,
+                         sim,
+                         source_num
                          );
+
+  for(int i = 0; i < end_ind.size(); i++)
+  {
+    std::cout << "predicted space: " << end_ind[i][0] << ", " << end_ind[i][1] << '\n';
+  }
+
+  if(sim == 1)
+  {
+    for(int i = 0; i < source_num; i++)
+    {
+      std::cout << "real space: " << mesh_tracker[i][0] << ", " << mesh_tracker[i][1] << '\n';
+    }
+  }
 
   duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 

@@ -27,12 +27,14 @@ class spatial_decon {
 
     int resp_index, combos, combo_piece, it_prod, deg_temp, layer_save,
         finer, isos, iso_iter, err, layer_seek, survy_save, survx_save,
-        savey, savex, real_ct, iso_found, passer, no_rep;
+        savey, savex, savey2, savex2, real_ct, iso_found, passer,
+        no_rep, iso_pass, pre_pass;
     float att_cps, macro_max, rand_source, min_dif, max_ele, dif_sum,
-          resp_sum, conf, max_ele_repo;
+          resp_sum, conf, max_ele_repo, max2_ele_repo;
 
     std::vector<int> degrees;
     std::vector<int> y_end, x_end, survskipx, survskipy;
+    std::vector<int> save_survy_vec, save_survx_vec, save_survy2_vec, save_survx2_vec;
     std::vector<float> min_min_vec, conf_levels;
     std::vector< std::vector<int> > compan_vec;
 

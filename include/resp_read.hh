@@ -19,8 +19,11 @@ class resp_read {
     std::vector <string> space_names;
 
     std::vector <float> temp;
+    std::vector<float> eff;
+    std::vector<float> bg;
+    std::vector<float> bg2;
 
-    int x, count_time;
+    int x, count_time, start_k;
     float spect_sum;
     string space_n;
 

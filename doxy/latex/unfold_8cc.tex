@@ -1,0 +1,90 @@
+\hypertarget{unfold_8cc}{}\section{tests/unfold.cc File Reference}
+\label{unfold_8cc}\index{tests/unfold.\+cc@{tests/unfold.\+cc}}
+{\ttfamily \#include $<$T\+H2.\+h$>$}\newline
+{\ttfamily \#include $<$T\+File.\+h$>$}\newline
+{\ttfamily \#include $<$T\+System.\+h$>$}\newline
+{\ttfamily \#include $<$T\+Math.\+h$>$}\newline
+{\ttfamily \#include $<$T\+Tree.\+h$>$}\newline
+{\ttfamily \#include $<$T\+String.\+h$>$}\newline
+{\ttfamily \#include $<$T\+Ntuple.\+h$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$T\+Class.\+h$>$}\newline
+{\ttfamily \#include $<$T\+Application.\+h$>$}\newline
+{\ttfamily \#include $<$sys/time.\+h$>$}\newline
+{\ttfamily \#include $<$ctime$>$}\newline
+Include dependency graph for unfold.\+cc\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{unfold_8cc__incl}
+\end{center}
+\end{figure}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef unsigned long long \mbox{\hyperlink{unfold_8cc_a29217083807c6b153656eda1a04f306d}{timestamp\+\_\+t}}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{unfold_8cc_a629708a3e6e3e31be73df380974987a9}{normalize}} (float $\ast$)
+\item 
+void \mbox{\hyperlink{unfold_8cc_abc893c4d407fd5b8bc451ce5c9fa290c}{multiply}} (float $\ast$$\ast$, float $\ast$)
+\item 
+void \mbox{\hyperlink{unfold_8cc_a711c23f90c830e749c9c849e6282647d}{do\+Refold}} (float $\ast$, float $\ast$$\ast$)
+\item 
+double \mbox{\hyperlink{unfold_8cc_a2df7244a9a191cce709c4e70e2ed3e9f}{calculate\+Residual}} (float $\ast$, float $\ast$)
+\item 
+const char $\ast$ \mbox{\hyperlink{unfold_8cc_a595837c698e2cdaed6f87491ef06f4aa}{do\+Unfold}} (float $\ast$, float $\ast$$\ast$, int, int, int, int, double)
+\item 
+int \mbox{\hyperlink{unfold_8cc_a3c04138a5bfe5d72780bb7e82a18e627}{main}} (int argc, char $\ast$$\ast$argv)
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\mbox{\Hypertarget{unfold_8cc_a29217083807c6b153656eda1a04f306d}\label{unfold_8cc_a29217083807c6b153656eda1a04f306d}} 
+\index{unfold.\+cc@{unfold.\+cc}!timestamp\+\_\+t@{timestamp\+\_\+t}}
+\index{timestamp\+\_\+t@{timestamp\+\_\+t}!unfold.\+cc@{unfold.\+cc}}
+\subsubsection{\texorpdfstring{timestamp\+\_\+t}{timestamp\_t}}
+{\footnotesize\ttfamily typedef unsigned long long \mbox{\hyperlink{unfold_8cc_a29217083807c6b153656eda1a04f306d}{timestamp\+\_\+t}}}
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{unfold_8cc_a2df7244a9a191cce709c4e70e2ed3e9f}\label{unfold_8cc_a2df7244a9a191cce709c4e70e2ed3e9f}} 
+\index{unfold.\+cc@{unfold.\+cc}!calculate\+Residual@{calculate\+Residual}}
+\index{calculate\+Residual@{calculate\+Residual}!unfold.\+cc@{unfold.\+cc}}
+\subsubsection{\texorpdfstring{calculate\+Residual()}{calculateResidual()}}
+{\footnotesize\ttfamily double calculate\+Residual (\begin{DoxyParamCaption}\item[{float $\ast$}]{source1,  }\item[{float $\ast$}]{source2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{unfold_8cc_a711c23f90c830e749c9c849e6282647d}\label{unfold_8cc_a711c23f90c830e749c9c849e6282647d}} 
+\index{unfold.\+cc@{unfold.\+cc}!do\+Refold@{do\+Refold}}
+\index{do\+Refold@{do\+Refold}!unfold.\+cc@{unfold.\+cc}}
+\subsubsection{\texorpdfstring{do\+Refold()}{doRefold()}}
+{\footnotesize\ttfamily void do\+Refold (\begin{DoxyParamCaption}\item[{float $\ast$}]{source\+In,  }\item[{float $\ast$$\ast$}]{RF }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{unfold_8cc_a595837c698e2cdaed6f87491ef06f4aa}\label{unfold_8cc_a595837c698e2cdaed6f87491ef06f4aa}} 
+\index{unfold.\+cc@{unfold.\+cc}!do\+Unfold@{do\+Unfold}}
+\index{do\+Unfold@{do\+Unfold}!unfold.\+cc@{unfold.\+cc}}
+\subsubsection{\texorpdfstring{do\+Unfold()}{doUnfold()}}
+{\footnotesize\ttfamily const char $\ast$ do\+Unfold (\begin{DoxyParamCaption}\item[{float $\ast$}]{source,  }\item[{float $\ast$$\ast$}]{resp\+Matrix,  }\item[{int}]{ssizex,  }\item[{int}]{ssizey,  }\item[{int}]{number\+Iterations,  }\item[{int}]{number\+Repetitions,  }\item[{double}]{boost }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{unfold_8cc_a3c04138a5bfe5d72780bb7e82a18e627}\label{unfold_8cc_a3c04138a5bfe5d72780bb7e82a18e627}} 
+\index{unfold.\+cc@{unfold.\+cc}!main@{main}}
+\index{main@{main}!unfold.\+cc@{unfold.\+cc}}
+\subsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$$\ast$}]{argv }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{unfold_8cc_abc893c4d407fd5b8bc451ce5c9fa290c}\label{unfold_8cc_abc893c4d407fd5b8bc451ce5c9fa290c}} 
+\index{unfold.\+cc@{unfold.\+cc}!multiply@{multiply}}
+\index{multiply@{multiply}!unfold.\+cc@{unfold.\+cc}}
+\subsubsection{\texorpdfstring{multiply()}{multiply()}}
+{\footnotesize\ttfamily void multiply (\begin{DoxyParamCaption}\item[{float $\ast$$\ast$}]{RF,  }\item[{float $\ast$}]{source }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{unfold_8cc_a629708a3e6e3e31be73df380974987a9}\label{unfold_8cc_a629708a3e6e3e31be73df380974987a9}} 
+\index{unfold.\+cc@{unfold.\+cc}!normalize@{normalize}}
+\index{normalize@{normalize}!unfold.\+cc@{unfold.\+cc}}
+\subsubsection{\texorpdfstring{normalize()}{normalize()}}
+{\footnotesize\ttfamily void normalize (\begin{DoxyParamCaption}\item[{float $\ast$}]{spectrum }\end{DoxyParamCaption})}
+

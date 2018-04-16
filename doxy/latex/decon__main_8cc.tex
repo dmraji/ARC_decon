@@ -1,0 +1,131 @@
+\hypertarget{decon__main_8cc}{}\section{decon\+\_\+main.\+cc File Reference}
+\label{decon__main_8cc}\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$iomanip$>$}\newline
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$ctime$>$}\newline
+{\ttfamily \#include $<$cstdio$>$}\newline
+{\ttfamily \#include \char`\"{}data\+\_\+read.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}gold\+\_\+decon.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}resp\+\_\+read.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}histo.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}sim\+\_\+source.\+hh\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}spatial\+\_\+decon.\+hh\char`\"{}}\newline
+Include dependency graph for decon\+\_\+main.\+cc\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{decon__main_8cc__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{decon__main_8cc_a3c04138a5bfe5d72780bb7e82a18e627}{main}} (int argc, char $\ast$$\ast$argv)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+vector$<$ vector$<$ float $>$ $>$ \mbox{\hyperlink{decon__main_8cc_a9885e2f4f2c1ec5b4d0db16d253892ad}{data\+\_\+mat}}
+\item 
+int \mbox{\hyperlink{decon__main_8cc_a1adfbfbc200c1f97d6055449f7815076}{data\+\_\+mat\+\_\+len}}
+\item 
+vector$<$ float $>$ \mbox{\hyperlink{decon__main_8cc_a492d57fd7c64e6f4e02b779824f7c56d}{data\+\_\+sim}}
+\item 
+vector$<$ vector$<$ float $>$ $>$ \mbox{\hyperlink{decon__main_8cc_a4a66e69e8cc5a880a8ccb008653f1b4c}{space\+\_\+sim}}
+\item 
+vector$<$ vector$<$ float $>$ $>$ \mbox{\hyperlink{decon__main_8cc_a2904cd77105f4855a21a41efe233992b}{resp\+\_\+mat\+\_\+read}}
+\item 
+vector$<$ float $>$ \mbox{\hyperlink{decon__main_8cc_a142e4ef7ff0a2b7bf754588286396ca7}{resp\+\_\+space\+\_\+mat\+\_\+read}}
+\item 
+int \mbox{\hyperlink{decon__main_8cc_aca3c1d36b05c2731d7276b0acc029b3f}{space\+\_\+datax}}
+\item 
+int \mbox{\hyperlink{decon__main_8cc_a6b37b7991c3851b6fa90ef56decee739}{space\+\_\+datay}}
+\item 
+vector$<$ vector$<$ int $>$ $>$ \mbox{\hyperlink{decon__main_8cc_a5772281f7b17c2278c30171f82ea8d13}{end\+\_\+ind}}
+\item 
+float \mbox{\hyperlink{decon__main_8cc_a43cce2495419f8219330c5474b026242}{source\+\_\+decon}} \mbox{[}4096\mbox{]}
+\item 
+int \mbox{\hyperlink{decon__main_8cc_ab96841bb4729a804d76a68a015d1df14}{iso\+\_\+count}}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{decon__main_8cc_a3c04138a5bfe5d72780bb7e82a18e627}\label{decon__main_8cc_a3c04138a5bfe5d72780bb7e82a18e627}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!main@{main}}
+\index{main@{main}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$$\ast$}]{argv }\end{DoxyParamCaption})}
+
+
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{decon__main_8cc_a9885e2f4f2c1ec5b4d0db16d253892ad}\label{decon__main_8cc_a9885e2f4f2c1ec5b4d0db16d253892ad}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!data\+\_\+mat@{data\+\_\+mat}}
+\index{data\+\_\+mat@{data\+\_\+mat}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{data\+\_\+mat}{data\_mat}}
+{\footnotesize\ttfamily vector$<$ vector$<$float$>$ $>$ data\+\_\+mat}
+
+\mbox{\Hypertarget{decon__main_8cc_a1adfbfbc200c1f97d6055449f7815076}\label{decon__main_8cc_a1adfbfbc200c1f97d6055449f7815076}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!data\+\_\+mat\+\_\+len@{data\+\_\+mat\+\_\+len}}
+\index{data\+\_\+mat\+\_\+len@{data\+\_\+mat\+\_\+len}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{data\+\_\+mat\+\_\+len}{data\_mat\_len}}
+{\footnotesize\ttfamily int data\+\_\+mat\+\_\+len}
+
+\mbox{\Hypertarget{decon__main_8cc_a492d57fd7c64e6f4e02b779824f7c56d}\label{decon__main_8cc_a492d57fd7c64e6f4e02b779824f7c56d}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!data\+\_\+sim@{data\+\_\+sim}}
+\index{data\+\_\+sim@{data\+\_\+sim}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{data\+\_\+sim}{data\_sim}}
+{\footnotesize\ttfamily vector$<$float$>$ data\+\_\+sim}
+
+\mbox{\Hypertarget{decon__main_8cc_a5772281f7b17c2278c30171f82ea8d13}\label{decon__main_8cc_a5772281f7b17c2278c30171f82ea8d13}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!end\+\_\+ind@{end\+\_\+ind}}
+\index{end\+\_\+ind@{end\+\_\+ind}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{end\+\_\+ind}{end\_ind}}
+{\footnotesize\ttfamily vector$<$ vector$<$int$>$ $>$ end\+\_\+ind}
+
+\mbox{\Hypertarget{decon__main_8cc_ab96841bb4729a804d76a68a015d1df14}\label{decon__main_8cc_ab96841bb4729a804d76a68a015d1df14}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!iso\+\_\+count@{iso\+\_\+count}}
+\index{iso\+\_\+count@{iso\+\_\+count}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{iso\+\_\+count}{iso\_count}}
+{\footnotesize\ttfamily int iso\+\_\+count}
+
+\mbox{\Hypertarget{decon__main_8cc_a2904cd77105f4855a21a41efe233992b}\label{decon__main_8cc_a2904cd77105f4855a21a41efe233992b}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!resp\+\_\+mat\+\_\+read@{resp\+\_\+mat\+\_\+read}}
+\index{resp\+\_\+mat\+\_\+read@{resp\+\_\+mat\+\_\+read}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{resp\+\_\+mat\+\_\+read}{resp\_mat\_read}}
+{\footnotesize\ttfamily vector$<$ vector$<$float$>$ $>$ resp\+\_\+mat\+\_\+read}
+
+\mbox{\Hypertarget{decon__main_8cc_a142e4ef7ff0a2b7bf754588286396ca7}\label{decon__main_8cc_a142e4ef7ff0a2b7bf754588286396ca7}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!resp\+\_\+space\+\_\+mat\+\_\+read@{resp\+\_\+space\+\_\+mat\+\_\+read}}
+\index{resp\+\_\+space\+\_\+mat\+\_\+read@{resp\+\_\+space\+\_\+mat\+\_\+read}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{resp\+\_\+space\+\_\+mat\+\_\+read}{resp\_space\_mat\_read}}
+{\footnotesize\ttfamily vector$<$float$>$ resp\+\_\+space\+\_\+mat\+\_\+read}
+
+\mbox{\Hypertarget{decon__main_8cc_a43cce2495419f8219330c5474b026242}\label{decon__main_8cc_a43cce2495419f8219330c5474b026242}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!source\+\_\+decon@{source\+\_\+decon}}
+\index{source\+\_\+decon@{source\+\_\+decon}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{source\+\_\+decon}{source\_decon}}
+{\footnotesize\ttfamily float source\+\_\+decon\mbox{[}4096\mbox{]}}
+
+\mbox{\Hypertarget{decon__main_8cc_aca3c1d36b05c2731d7276b0acc029b3f}\label{decon__main_8cc_aca3c1d36b05c2731d7276b0acc029b3f}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!space\+\_\+datax@{space\+\_\+datax}}
+\index{space\+\_\+datax@{space\+\_\+datax}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{space\+\_\+datax}{space\_datax}}
+{\footnotesize\ttfamily int space\+\_\+datax}
+
+\mbox{\Hypertarget{decon__main_8cc_a6b37b7991c3851b6fa90ef56decee739}\label{decon__main_8cc_a6b37b7991c3851b6fa90ef56decee739}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!space\+\_\+datay@{space\+\_\+datay}}
+\index{space\+\_\+datay@{space\+\_\+datay}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{space\+\_\+datay}{space\_datay}}
+{\footnotesize\ttfamily int space\+\_\+datay}
+
+\mbox{\Hypertarget{decon__main_8cc_a4a66e69e8cc5a880a8ccb008653f1b4c}\label{decon__main_8cc_a4a66e69e8cc5a880a8ccb008653f1b4c}} 
+\index{decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}!space\+\_\+sim@{space\+\_\+sim}}
+\index{space\+\_\+sim@{space\+\_\+sim}!decon\+\_\+main.\+cc@{decon\+\_\+main.\+cc}}
+\subsubsection{\texorpdfstring{space\+\_\+sim}{space\_sim}}
+{\footnotesize\ttfamily vector$<$ vector$<$float$>$ $>$ space\+\_\+sim}
+
