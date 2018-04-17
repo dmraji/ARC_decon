@@ -35,8 +35,8 @@ sim_source::sim_source(float *resp_space,
   inFile.close();
 
   // Assembly of spatial sim
-  sim_size_y = 100;
-  sim_size_x = 150;
+  sim_size_y = 20;
+  sim_size_x = 30;
 
   float surv_sim[sim_size_y][sim_size_x] = {};
 
@@ -394,8 +394,6 @@ sim_source::~sim_source() {}
 //   // For kyle and dem boyz
 //   //
 //   //
-//
-//   cout << "begin data read." << endl;
 //
 //   PGconn   *conn;
 //   PGresult *res;

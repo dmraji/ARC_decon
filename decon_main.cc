@@ -4,7 +4,10 @@
 #include <fstream>
 #include <vector>
 #include <ctime>
+#include <cstdlib>
 #include <cstdio>
+
+#include <postgresql/libpq-fe.h>
 
 #include "data_read.hh"
 #include "gold_decon.hh"
@@ -240,6 +243,56 @@ int main(int argc, char** argv) {
     {
       std::cout << "real space: " << mesh_tracker[i][0] << ", " << mesh_tracker[i][1] << '\n';
     }
+  }
+
+  // Results & Data Export
+  PGconn   *conn;
+  PGresult *res;
+
+  // Look at Michael's shim code for connection over socket
+  conn = PQconnectdb("dbname=det_db user=postgres password=postgres hostaddr=127.0.0.1 port=5432");
+
+  if (PQstatus(conn) == CONNECTION_BAD) {
+         puts("We were unable to connect to the database");
+         exit(0);
+  }
+
+  res = PQexec(conn, "delete from det_sim_space");
+
+  // res = PQexec(conn,
+  //        "create table det_sim_space (counts integer NOT NULL, neutron smallint NOT NULL, gamma smallint NOT NULL, xbin integer NOT NULL, ybin integer NOT NULL)");
+  for(int i = 0; i < sim_size_y; i++)
+  {
+    for(int j = 0; j < sim_size_x; j++)
+    {
+      float rand_src = ((double) rand() / (RAND_MAX));
+      std::cout << rand_src << '\n';
+      string big_str = "insert into det_sim_space (ind, counts, neutron, gamma, xbin, ybin) values ("+to_string(j + (sim_size_x * (i)))+", "+to_string(space_sim[i][j])+", "+to_string(round(space_sim[i][j] * rand_src))+", "+
+          to_string(round(space_sim[i][j] * (1 - rand_src)))+", "+to_string(j)+", "+to_string(i)+")";
+      res = PQexec(conn, big_str.c_str());
+    }
+  }
+
+
+  res = PQexec(conn,
+         "select * from det_sim_space order by ind");
+
+  if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+         puts("We did not get any data!");
+         exit(0);
+  }
+
+  int rec_count = PQntuples(res);
+  // cout << rec_count << '\n';
+
+  printf("We received %d records.\n", rec_count);
+  puts("==========================");
+
+  for (int row=0; row<rec_count; row++) {
+      for (int col=0; col<6; col++) {
+          printf("%s\t", PQgetvalue(res, row, col));
+      }
+      puts("");
   }
 
   duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;

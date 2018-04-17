@@ -18,3 +18,7 @@ test.txt
 2_21_hour_BG.txt
 2_21_natU.txt
 2_21_ra226.txt
+
+# Doxy
+#doxy.config
+#doxy/*
