@@ -20,5 +20,5 @@ test.txt
 2_21_ra226.txt
 
 # Doxy
-#doxy.config
-#doxy/*
+doxy.config
+doxy/*
