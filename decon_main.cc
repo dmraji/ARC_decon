@@ -3,6 +3,9 @@
 #include <iomanip>
 #include <fstream>
 #include <vector>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 #include <ctime>
 #include <cstdlib>
 #include <cstdio>
@@ -19,7 +22,8 @@
 using namespace std;
 
 // Data var init
-vector< vector<float> > data_mat;
+vector< vector<float> > data_mat, data_space, data_space_starttimes, data_space_stoptimes;
+vector <float> times, en, xbin, pos_xbin, ybin, pos_ybin;
 int data_mat_len;
 
 // Sim var init
@@ -43,6 +47,11 @@ int iso_count;
 
 int main(int argc, char** argv) {
 
+  label:
+    std::cout << "Re-init." << '\n';
+
+  std::cout << "Decon start." << '\n';
+
   // Allow true random numbers
   srand(time(NULL));
 
@@ -50,8 +59,6 @@ int main(int argc, char** argv) {
   double duration;
 
   start = std::clock();
-
-  // cout << "hi.\n";
 
   // Build response matrix from experimental spectra
   int chs = 4096;
@@ -79,8 +86,6 @@ int main(int argc, char** argv) {
     }
   }
 
-  std::cout << "ln 62 main" << '\n';
-
   // UPDATE THIS
   int space_depth = 9;
   int space_breadth = 9;
@@ -101,8 +106,6 @@ int main(int argc, char** argv) {
 
   int space_lenx;
   int space_leny;
-
-  std::cout << "ln 100 main." << '\n';
 
   // change this to stop using sim source
   int sim = 1;
@@ -133,6 +136,14 @@ int main(int argc, char** argv) {
     // Obtain vector of vectors via data read-in
     data_read readIt;
 
+    for(int l = 0; l < data_mat_len; l++)
+    {
+      times.push_back(data_mat[3][l]);
+      en.push_back(data_mat[4][l]);
+      xbin.push_back(data_mat[5][l]);
+      ybin.push_back(data_mat[6][l]);
+    }
+
     space_lenx = space_datax;
     space_leny = space_datay;
   }
@@ -154,19 +165,110 @@ int main(int argc, char** argv) {
       }
     }
   }
+  else
+  {
 
-  cout << "ln 97 main." << endl;
+    // Parsing data read
+
+    int min_xbin = 0;
+    int max_xbin = 0;
+    int min_ybin = 0;
+    int max_ybin = 0;
+    float time_s = 0;
+    int xbin_cur = 0;
+    int ybin_cur = 0;
+
+    string delim;
+    std::vector < string > date_time;
+    std::vector < string > hr_min_sec;
+    float comp_time;
+
+    // Adjust for negative space values
+    pos_xbin.resize(xbin.size());
+    pos_ybin.resize(ybin.size());
+
+    for(int s = 0; s < xbin.size(); s++)
+    {
+      if(xbin[s] < min_xbin)
+      {
+        min_xbin = xbin[s];
+      }
+      if(xbin[s] > max_xbin)
+      {
+        max_xbin = xbin[s];
+      }
+      if(ybin[s] < min_ybin)
+      {
+        min_ybin = ybin[s];
+      }
+      if(ybin[s] > max_ybin)
+      {
+        max_ybin = ybin[s];
+      }
+    }
+    for(int s = 0; s < xbin.size(); s++)
+    {
+      pos_xbin[s] = xbin[s] - min_xbin;
+      pos_ybin[s] = ybin[s] - min_ybin;
+    }
+
+    max_xbin = max_xbin - min_xbin;
+    max_ybin = max_ybin - min_ybin;
+
+    data_space.resize(max_xbin);
+    data_space_starttimes.resize(max_xbin);
+    data_space_stoptimes.resize(max_xbin);
+    for(int o = 0; o < max_xbin; o++)
+    {
+      data_space[o].resize(max_ybin);
+      data_space_starttimes[o].resize(max_ybin);
+      data_space_stoptimes[o].resize(max_ybin);
+    }
+
+    std::vector < string > elems;
+    split(s, delim, std::back_inserter(elems));
+
+    for(int s = 0; s < pos_xbin.size(); s++)
+    {
+
+      delim = " ";
+      split(times[s], delim, std::back_inserter(date_time));
+      delim = ":";
+      split(date_time[1], delim, std::back_inserter(hr_min_sec));
+
+      comp_time = (3600 * hr_min_sec[0]) + (60 * hr_min_sec[1]) + (hr_min_sec[2]);
+
+      if(data_space_starttimes[pos_xbin[s]][pos_ybin[s]] == 0)
+      {
+
+        data_space_starttimes[pos_xbin[s]][pos_ybin[s]] = comp_time;
+      }
+      data_space_stoptimes[pos_xbin[s]][pos_ybin[s]] = comp_time;
+
+      data_space[pos_xbin[s]][pos_ybin[s]] = data_space[pos_xbin[s]][pos_ybin[s]] + 1;
+
+    }
+
+    // Transform to count rates
+    for(int s = 0; s < pos_xbin.size(); s++)
+    {
+      data_space[pos_xbin[s]][pos_ybin[s]] = data_space[pos_xbin[s]][pos_ybin[s]] /
+        data_space_stoptimes[pos_xbin[s]][pos_ybin[s]] - data_space_starttimes[pos_xbin[s]][pos_ybin[s]];
+    }
+
+  }
 
   float* source_mat = new float[data_mat_len];
 
   if(sim == 0)
   {
-    for (int dat_ind = 0; dat_ind < data_mat_len; dat_ind++)
+    for (int dat_ind = 0; dat_ind < en.size(); dat_ind++)
     {
-      source_mat[dat_ind] = data_mat[dat_ind][8];
+      source_mat[dat_ind] = en[dat_ind];
     }
     histo histIt(source_mat,
-                   data_mat_len);
+                 en.size()
+                 );
   }
   else
   {
@@ -257,19 +359,22 @@ int main(int argc, char** argv) {
          exit(0);
   }
 
-  res = PQexec(conn, "delete from det_sim_space");
+  // res = PQexec(conn, "delete from heatmap");
 
   // res = PQexec(conn,
-  //        "create table det_sim_space (counts integer NOT NULL, neutron smallint NOT NULL, gamma smallint NOT NULL, xbin integer NOT NULL, ybin integer NOT NULL)");
+  //        "create table det_sim_space (ind SERIAL, counts integer NOT NULL, neutron smallint NOT NULL, gamma smallint NOT NULL, xbin integer NOT NULL, ybin integer NOT NULL)");
+
+  res = PQexec(conn,
+         "create table heatmap (ind SERIAL, counts integer NOT NULL, neutron smallint NOT NULL, gamma smallint NOT NULL, xbin integer NOT NULL, ybin integer NOT NULL)");
   for(int i = 0; i < sim_size_y; i++)
   {
     for(int j = 0; j < sim_size_x; j++)
     {
-      float rand_src = ((double) rand() / (RAND_MAX));
-      std::cout << rand_src << '\n';
+
       string big_str = "insert into det_sim_space (ind, counts, neutron, gamma, xbin, ybin) values ("+to_string(j + (sim_size_x * (i)))+", "+to_string(space_sim[i][j])+", "+to_string(round(space_sim[i][j] * rand_src))+", "+
           to_string(round(space_sim[i][j] * (1 - rand_src)))+", "+to_string(j)+", "+to_string(i)+")";
       res = PQexec(conn, big_str.c_str());
+
     }
   }
 
@@ -308,5 +413,17 @@ int main(int argc, char** argv) {
 
   delete [] response_space_matrix;
 
+  // goto label;
+
   return 0;
+}
+
+// String splitting for times in psql
+template<typename Out>
+void split(const std::string &s, char delim, Out result) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        *(result++) = item;
+    }
 }
