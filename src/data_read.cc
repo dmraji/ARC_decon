@@ -29,9 +29,6 @@ data_read::data_read()
   }
 
   res = PQexec(conn,
-         "update det_out set psd=\'0.0005\' where ind=3");
-
-  res = PQexec(conn,
          "select * from det_out order by ind");
 
   if (PQresultStatus(res) != PGRES_TUPLES_OK) {
