@@ -22,8 +22,9 @@
 using namespace std;
 
 // Data var init
-vector< vector<float> > data_mat, data_space, data_space_starttimes, data_space_stoptimes;
-vector <float> times, en, xbin, pos_xbin, ybin, pos_ybin;
+vector< vector<float> > data_mat, data_space, data_space_gamma, data_space_starttimes, data_space_stoptimes;
+vector <float> times, en, en_gamma, xbin, pos_xbin, ybin, pos_ybin;
+vector <int> neut;
 int data_mat_len;
 
 // Sim var init
@@ -143,6 +144,8 @@ int main(int argc, char** argv) {
       en.push_back(data_mat[4][l]);
       xbin.push_back(data_mat[5][l]);
       ybin.push_back(data_mat[6][l]);
+      neut.push_back(data_mat[7][l]);
+
     }
 
     space_lenx = space_datax;
@@ -252,6 +255,10 @@ int main(int argc, char** argv) {
       data_space_stoptimes[pos_xbin[s]][pos_ybin[s]] = comp_time;
 
       data_space[pos_xbin[s]][pos_ybin[s]] = data_space[pos_xbin[s]][pos_ybin[s]] + 1;
+      if(neut[s] == 0)
+      {
+        data_space_gamma[pos_xbin[s]][pos_ybin[s]] = data_space_gamma[pos_xbin[s]][pos_ybin[s]] + 1;
+      }
 
     }
 
@@ -268,12 +275,19 @@ int main(int argc, char** argv) {
 
   if(sim == 0)
   {
-    for (int dat_ind = 0; dat_ind < en.size(); dat_ind++)
+    for(int en_ct = 0; en_ct < en.size(); en_ct++)
     {
-      source_mat[dat_ind] = en[dat_ind];
+      if(neut[en_ct] == 0)
+      {
+        en_gamma.push_back(en[en_ct]);
+      }
+    }
+    for(int dat_ind = 0; dat_ind < en_gamma.size(); dat_ind++)
+    {
+      source_mat[dat_ind] = en_gamma[dat_ind];
     }
     histo histIt(source_mat,
-                 en.size()
+                 en_gamma.size()
                  );
   }
   else
@@ -419,8 +433,8 @@ int main(int argc, char** argv) {
 
         string big_str = "insert into heatmap (ind, counts, neutron, gamma, xbin, ybin) values ("
                            +to_string(j + (data_space[0].size() * (i)))+", "
-                           +to_string(data_space[i][j])+", "+to_string(round(data_space[i][j]))
-                           +", "+to_string(round(0))+", "+to_string(j)+", "+to_string(i)+")";
+                           +to_string(data_space[i][j])+", "+to_string(round(data_space[i][j] - data_space_gamma[i][j]))
+                           +", "+to_string(data_space_gamma[i][j])+", "+to_string(j)+", "+to_string(i)+")";
 
         res = PQexec(conn, big_str.c_str());
       }
