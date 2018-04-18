@@ -1,17 +1,23 @@
-~~~ RAD_READ README ~~~
+~~~ ARC_decon README ~~~
 
 ~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 TABLE OF CONTENTS
 
-I. Intro
-II. Database Specs
-III. Classes
-IV. Spectral Deconvolution
-V. Spatial Deconvolution
-VI. Notes
-VII. A Basic PSQL Tutorial
+I. Intro;
+
+II. Database Specs;
+
+III. Classes;
+
+IV. Spectral Deconvolution;
+
+V. Spatial Deconvolution;
+
+VI. Notes;
+
+VII. A Basic PSQL Tutorial;
 
 ~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -143,11 +149,13 @@ Step 4: Adding data
 Tables are used to hold data within psql databases. To create a table while
   operating within a table, we can do:
 
+~~~~~~~~~~~~~~~~~~~~~~~
   create table <table-name> (
     <data-spec1>    <data-type>
     <data-spec2>    <data-type>
     ...             ...
     )
+~~~~~~~~~~~~~~~~~~~~~~~
 
   In this instantiation, the data-spec refers to the name of the data column.
   some examples of this could be "names", "phonenumbers" or "addresses". The
