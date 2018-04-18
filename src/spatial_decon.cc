@@ -392,6 +392,7 @@ spatial_decon::spatial_decon(float *resp_space,
   {
     compan_vec.push_back({-1, -1});
     min_min_vec.push_back(10000);
+    conf_vec.push_back(0);
   }
   layer_seek = 0;
   iso_found = 0;
@@ -609,6 +610,7 @@ spatial_decon::spatial_decon(float *resp_space,
                   layer_seek = layer_thru;
                   if(conf > conf_levels[2 - ((fine - 2) - 1) / 2 - 1])
                   {
+                    conf_vec[isos_ind - 1] = conf;
                     // std::cout << "iso #" << isos_ind << ", iter: " << l << '\n';
                     survx_save = survx + 1;
                     // std::cout << "survx_save: " << survx_save << '\n';

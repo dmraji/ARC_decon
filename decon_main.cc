@@ -4,8 +4,8 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
-#include <algorithm>
 #include <iterator>
+#include <cmath>
 #include <ctime>
 #include <cstdlib>
 #include <cstdio>
@@ -39,6 +39,7 @@ vector<float> resp_space_mat_read;
 // Spatial data init
 int space_datax, space_datay;
 vector< vector<int> > end_ind;
+std::vector<float> conf_vec;
 
 // Source var init
 float source_decon[4096];
@@ -225,18 +226,23 @@ int main(int argc, char** argv) {
       data_space_stoptimes[o].resize(max_ybin);
     }
 
-    std::vector < string > elems;
-    split(s, delim, std::back_inserter(elems));
-
     for(int s = 0; s < pos_xbin.size(); s++)
     {
 
-      delim = " ";
-      split(times[s], delim, std::back_inserter(date_time));
-      delim = ":";
-      split(date_time[1], delim, std::back_inserter(hr_min_sec));
+      // Splitting timestamp strings
+      istringstream f(to_string(times[s]));
+      string str;
+      while(getline(f, str, ' '))
+      {
+        date_time.push_back(str);
+      }
+      istringstream g(date_time[1]);
+      while(getline(g, str, ':'))
+      {
+        hr_min_sec.push_back(str);
+      }
 
-      comp_time = (3600 * hr_min_sec[0]) + (60 * hr_min_sec[1]) + (hr_min_sec[2]);
+      comp_time = (3600 * stoi(hr_min_sec[0])) + (60 * stoi(hr_min_sec[1])) + stoi(hr_min_sec[2]);
 
       if(data_space_starttimes[pos_xbin[s]][pos_ybin[s]] == 0)
       {
@@ -297,19 +303,46 @@ int main(int argc, char** argv) {
   // NORMALIZED RESP BY ITENTSITY (TOTAL COUNTS) AND SOURCE BY TIME (2*3600)
   //
   // !!
+
+  std::vector<string> iso_names;
+  iso_names.push_back("Co-57");
+  iso_names.push_back("Pu-239");
+  iso_names.push_back("Ba-133");
+  iso_names.push_back("Cf-252");
+  iso_names.push_back("Cs-137");
+  iso_names.push_back("Th-232");
+  iso_names.push_back("Am-241");
+  iso_names.push_back("Natural Uranium");
+  iso_names.push_back("U-235");
+  iso_names.push_back("Co-60");
+  iso_names.push_back("Ra-226");
+
   gold_decon callIt(response_matrix,
                     source_decon,
                     chs,
                     num_spectra,
                     num_iter,
                     num_rep,
-                    boost
+                    boost,
+                    iso_names
                     );
 
   // for(int printer = 0; printer < 4096; printer++)
   // {
   //   cout << source_decon[printer] << endl;
   // }
+
+  std::vector<float> spect_res;
+  std::vector<string> iso_res;
+
+  for(int i = 0; i < num_spectra; i++)
+  {
+    if(source_decon[i] > 0)
+    {
+      spect_res.push_back(source_decon[i]);
+      iso_res.push_back(iso_names[i]);
+    }
+  }
 
   // Spatial deconvolution algorithm call
 
@@ -318,21 +351,21 @@ int main(int argc, char** argv) {
   int fine = 7;
   int space_iter = 10;
 
-  // Turn on for farther "view", better spatial algorithm; off for speed;
+  // Turn on for farther "view", better spatial algorithm; off for speed; (warning: off not tested)
   int future_sight = 1;
 
   spatial_decon spaceIt(response_space_matrix,
-                         resp_space_len,
-                         source_space,
-                         space_lenx,
-                         space_leny,
-                         fine,
-                         iso_count,
-                         space_iter,
-                         future_sight,
-                         sim,
-                         source_num
-                         );
+                        resp_space_len,
+                        source_space,
+                        space_lenx,
+                        space_leny,
+                        fine,
+                        iso_count,
+                        space_iter,
+                        future_sight,
+                        sim,
+                        source_num
+                        );
 
   for(int i = 0; i < end_ind.size(); i++)
   {
@@ -347,16 +380,25 @@ int main(int argc, char** argv) {
     }
   }
 
-  // Results & Data Export
+  /*
+
+      ~~~~~~~~~~~~~~~~~~~~~
+
+      RESULTS & DATA EXPORT
+
+      ~~~~~~~~~~~~~~~~~~~~~
+
+  */
+
   PGconn   *conn;
   PGresult *res;
 
-  // Look at Michael's shim code for connection over socket
   conn = PQconnectdb("dbname=det_db user=postgres password=postgres hostaddr=127.0.0.1 port=5432");
 
-  if (PQstatus(conn) == CONNECTION_BAD) {
-         puts("We were unable to connect to the database");
-         exit(0);
+  if(PQstatus(conn) == CONNECTION_BAD)
+  {
+    puts("We were unable to connect to the database");
+    exit(0);
   }
 
   // res = PQexec(conn, "delete from heatmap");
@@ -364,27 +406,62 @@ int main(int argc, char** argv) {
   // res = PQexec(conn,
   //        "create table det_sim_space (ind SERIAL, counts integer NOT NULL, neutron smallint NOT NULL, gamma smallint NOT NULL, xbin integer NOT NULL, ybin integer NOT NULL)");
 
-  res = PQexec(conn,
-         "create table heatmap (ind SERIAL, counts integer NOT NULL, neutron smallint NOT NULL, gamma smallint NOT NULL, xbin integer NOT NULL, ybin integer NOT NULL)");
-  for(int i = 0; i < sim_size_y; i++)
+  // Heatmap Results
+  if(sim == 0)
   {
-    for(int j = 0; j < sim_size_x; j++)
+
+    res = PQexec(conn, "create table heatmap (ind SERIAL, counts integer NOT NULL, neutron smallint NOT NULL, gamma smallint NOT NULL, xbin integer NOT NULL, ybin integer NOT NULL)");
+
+    for(int i = 0; i < data_space.size(); i++)
     {
+      for(int j = 0; j < data_space[0].size(); j++)
+      {
 
-      string big_str = "insert into det_sim_space (ind, counts, neutron, gamma, xbin, ybin) values ("+to_string(j + (sim_size_x * (i)))+", "+to_string(space_sim[i][j])+", "+to_string(round(space_sim[i][j] * rand_src))+", "+
-          to_string(round(space_sim[i][j] * (1 - rand_src)))+", "+to_string(j)+", "+to_string(i)+")";
-      res = PQexec(conn, big_str.c_str());
+        string big_str = "insert into heatmap (ind, counts, neutron, gamma, xbin, ybin) values ("
+                           +to_string(j + (data_space[0].size() * (i)))+", "
+                           +to_string(data_space[i][j])+", "+to_string(round(data_space[i][j]))
+                           +", "+to_string(round(0))+", "+to_string(j)+", "+to_string(i)+")";
 
+        res = PQexec(conn, big_str.c_str());
+      }
     }
   }
 
+  //
+  // Spectral Decon Results
+  //
+  res = PQexec(conn, "create table spect_res (ind SERIAL, iso character varying(32) NOT NULL, intensity integer NOT NULL)");
 
-  res = PQexec(conn,
-         "select * from det_sim_space order by ind");
+  for(int i = 0; i < spect_res.size(); i++)
+  {
 
-  if (PQresultStatus(res) != PGRES_TUPLES_OK) {
-         puts("We did not get any data!");
-         exit(0);
+      string spect_str = "insert into spect_res (ind, iso, intensity) values ("
+                         +to_string(i)+", "+iso_res[i]+", "+to_string(spect_res[i])+")";
+
+      res = PQexec(conn, spect_str.c_str());
+  }
+
+  //
+  // Spatial Decon Results
+  //
+  res = PQexec(conn, "create table spatial_res (ind SERIAL, xbin integer NOT NULL, ybin integer NOT NULL, confidence real NOT NULL)");
+
+  for(int i = 0; i < end_ind.size(); i++)
+  {
+
+      string spatial_str = "insert into spatial_res (ind, xbin, ybin, confidence) values ("
+                         +to_string(i)+", "+to_string(end_ind[i][0])+", "+to_string(end_ind[i][1])
+                         +", "+to_string(conf_vec[i])+")";
+
+      res = PQexec(conn, spatial_str.c_str());
+  }
+
+  res = PQexec(conn, "select * from heatmap order by ind");
+
+  if(PQresultStatus(res) != PGRES_TUPLES_OK)
+  {
+    puts("We did not get any data!");
+    exit(0);
   }
 
   int rec_count = PQntuples(res);
@@ -393,11 +470,13 @@ int main(int argc, char** argv) {
   printf("We received %d records.\n", rec_count);
   puts("==========================");
 
-  for (int row=0; row<rec_count; row++) {
-      for (int col=0; col<6; col++) {
-          printf("%s\t", PQgetvalue(res, row, col));
-      }
-      puts("");
+  for(int row = 0; row < rec_count; row++)
+  {
+    for(int col = 0; col < 6; col++)
+    {
+      printf("%s\t", PQgetvalue(res, row, col));
+    }
+    puts("");
   }
 
   duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
@@ -416,14 +495,4 @@ int main(int argc, char** argv) {
   // goto label;
 
   return 0;
-}
-
-// String splitting for times in psql
-template<typename Out>
-void split(const std::string &s, char delim, Out result) {
-    std::stringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim)) {
-        *(result++) = item;
-    }
 }

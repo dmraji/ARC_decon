@@ -34,7 +34,9 @@ gold_decon::gold_decon(float **respMatrix,
 					 						 int ssizey,
 					 						 int numberIterations,
 					 						 int numberRepetitions,
-					 						 double boost)
+					 						 double boost,
+										 	 std::vector<string> iso_names
+										 	 )
 					 						 {
 
 	  cout << "begin gold." << endl;
@@ -358,18 +360,6 @@ gold_decon::gold_decon(float **respMatrix,
 		// END OF REPETITIONS
 
 		iso_count = 0;
-
-		iso_names.push_back("Co-57");
-		iso_names.push_back("Pu-239");
-		iso_names.push_back("Ba-133");
-		iso_names.push_back("Cf-252");
-		iso_names.push_back("Cs-137");
-		iso_names.push_back("Th-232");
-		iso_names.push_back("Am-241");
-		iso_names.push_back("Natural Uranium");
-		iso_names.push_back("U-235");
-		iso_names.push_back("Co-60");
-		iso_names.push_back("Ra-226");
 
 		// iso_names.push_back("Am-241");
 		// iso_names.push_back("Co-60");

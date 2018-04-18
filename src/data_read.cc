@@ -46,7 +46,7 @@ data_read::data_read()
   puts("==========================");
 
   for (row=0; row<rec_count; row++) {
-      for (col=0; col<10; col++) {
+      for (col=0; col<7; col++) {
           printf("%s\t", PQgetvalue(res, row, col));
       }
       puts("");
@@ -56,7 +56,7 @@ data_read::data_read()
   {
       std::cout << "values= ";
 
-      for (int c=0; c<10; c++)
+      for (int c=0; c<7; c++)
       {
           char* value = PQgetvalue(res, r, c);
           float fval = atof(value);

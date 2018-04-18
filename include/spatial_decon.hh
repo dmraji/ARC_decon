@@ -4,6 +4,7 @@
 using namespace std;
 
 extern std::vector< std::vector<int> > end_ind;
+extern std::vector <float> conf_vec;
 
 class spatial_decon {
 

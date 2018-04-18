@@ -15,7 +15,8 @@ class gold_decon
                int,
                int,
                int,
-               double
+               double,
+               std::vector<string>
                );
     ~gold_decon();
 
@@ -25,7 +26,6 @@ class gold_decon
     int wksp_len;
    	double lda, ldb, ldc, area;
     std::vector<double> lda_vec;
-    std::vector<string> iso_names;
 
 };
 
