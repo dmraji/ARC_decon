@@ -20,6 +20,7 @@ class spatial_decon {
                   int,
                   int,
                   int,
+                  int,
                   int
                   );
     ~spatial_decon();

@@ -24,7 +24,7 @@ class gold_decon
 
     int i, j, k, lindex, lhx = 0, repet;
     int wksp_len;
-   	double lda, ldb, ldc, area;
+   	double lda, ldb, ldc, area, max_inten;
     std::vector<double> lda_vec;
 
 };

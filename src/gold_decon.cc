@@ -371,13 +371,19 @@ gold_decon::gold_decon(float **respMatrix,
 
 		std::cout << '\n';
 
-   	for (i = 0; i < ssizex; i++)
+		max_inten = 0;
+
+   	for(i = 0; i < ssizex; i++)
 		{
 
     	if (i < ssizey)
 			{
      		source[i] = working_space[ssizex * ssizey + 2 * ssizey * ssizey + i];
-				cout << iso_names[i] << " intensity: " << source[i] << endl;
+				// cout << iso_names[i] << " intensity: " << source[i] << endl;
+				if(source[i] > max_inten)
+				{
+					max_inten = source[i];
+				}
 				if(source[i] != 0)
 				{
 					iso_count = iso_count + 1;
@@ -389,6 +395,12 @@ gold_decon::gold_decon(float **respMatrix,
 			}
 
    	}
+
+		for(i = 0; i < ssizey; i++)
+		{
+			source[i] = source[i] / max_inten;
+			cout << iso_names[i] << " intensity: " << source[i] << endl;
+		}
 
 		std::cout << '\n' << "Distinct Isotopes Predicted: " << iso_count << '\n' << endl;
 

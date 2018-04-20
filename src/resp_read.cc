@@ -16,19 +16,19 @@ resp_read::resp_read()
   std::cout << "Begin response read." << '\n';
 
   // Spectral response
-  spectra_names.push_back("3_1_bkg.txt");
-  spectra_names.push_back("3_1_co57.txt");
-  spectra_names.push_back("3_1_pu239.txt");
-  spectra_names.push_back("3_2_ba133.txt");
-  spectra_names.push_back("3_2_cf252.txt");
-  spectra_names.push_back("3_2_cs137.txt");
-  spectra_names.push_back("3_2_th232.txt");
-  spectra_names.push_back("3_28_bkg_12hr.txt");
-  spectra_names.push_back("3_28_am241_2hr.txt");
-  spectra_names.push_back("3_28_ntrlU_2hr.txt");
-  spectra_names.push_back("3_28_u235_2hr.txt");
-  spectra_names.push_back("3_29_co6_2hr.txt");
-  spectra_names.push_back("3_29_ra226_2hr.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_1_bkg.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_1_co57.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_1_pu239.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_2_ba133.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_2_cf252.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_2_cs137.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_2_th232.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_28_bkg_12hr.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_28_am241_2hr.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_28_ntrlU_2hr.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_28_u235_2hr.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_29_co6_2hr.txt");
+  spectra_names.push_back("/home/david/4232/radiation_processing/exp_response/3_29_ra226_2hr.txt");
 
   // spectra_names.push_back("2_21_hour_BG.txt");
   // spectra_names.push_back("2_21_am241.txt"); // 100% intrin
@@ -131,15 +131,15 @@ resp_read::resp_read()
     for(int xn = 0; xn < 9; xn++)
     {
       space_n = to_string(xi[xn]) + "-" + to_string(yi[yn]) + "_space_3-09.txt";
-      inFile.open(space_n);
+      inFile.open("/home/david/4232/radiation_processing/space_resp/"+space_n);
       if(!inFile)
       {
         space_n = to_string(xi[xn]) + "-" + to_string(yi[yn]) + "_space_3-14.txt";
-        inFile.open(space_n);
+        inFile.open("/home/david/4232/radiation_processing/space_resp/"+space_n);
         if(!inFile)
         {
           space_n = to_string(xi[xn]) + "-" + to_string(yi[yn]) + "_space_3-22.txt";
-          inFile.open(space_n);
+          inFile.open("/home/david/4232/radiation_processing/space_resp/"+space_n);
           if(!inFile)
           {
 
@@ -147,16 +147,16 @@ resp_read::resp_read()
             if(yi[yn] < 1)
             {
               space_n = to_string(xi[yn]) + "-" + to_string(yi[xn]) + "_space_3-09.txt";
-              inFile.open(space_n);
+              inFile.open("/home/david/4232/radiation_processing/space_resp/"+space_n);
               if(!inFile)
               {
                 space_n = to_string(xi[yn]) + "-" + to_string(yi[xn]) + "_space_3-14.txt";
-                inFile.open(space_n);
+                inFile.open("/home/david/4232/radiation_processing/space_resp/"+space_n);
                 if(!inFile)
                 {
                   space_n = to_string(xi[yn]) + "-" + to_string(yi[xn]) + "_space_3-22.txt";
 
-                  inFile.open(space_n);
+                  inFile.open("/home/david/4232/radiation_processing/space_resp/"+space_n);
                   if(!inFile)
                   {
                     cout << "Unable to open file" << endl;
@@ -164,19 +164,19 @@ resp_read::resp_read()
                   }
                   else
                   {
-                    space_names.push_back(space_n);
+                    space_names.push_back("/home/david/4232/radiation_processing/space_resp/"+space_n);
                     inFile.close();
                   }
                 }
                 else
                 {
-                  space_names.push_back(space_n);
+                  space_names.push_back("/home/david/4232/radiation_processing/space_resp/"+space_n);
                   inFile.close();
                 }
               }
               else
               {
-                space_names.push_back(space_n);
+                space_names.push_back("/home/david/4232/radiation_processing/space_resp/"+space_n);
                 inFile.close();
               }
             }
@@ -188,19 +188,19 @@ resp_read::resp_read()
           }
           else
           {
-            space_names.push_back(space_n);
+            space_names.push_back("/home/david/4232/radiation_processing/space_resp/"+space_n);
             inFile.close();
           }
         }
         else
         {
-          space_names.push_back(space_n);
+          space_names.push_back("/home/david/4232/radiation_processing/space_resp/"+space_n);
           inFile.close();
         }
       }
       else
       {
-        space_names.push_back(space_n);
+        space_names.push_back("/home/david/4232/radiation_processing/space_resp/"+space_n);
         inFile.close();
       }
     }
